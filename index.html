@@ -4535,6 +4535,7 @@
             createLibraryEnvironment();
             createBookShelves();
             createLibraryFurniture();
+            addPhotoToWall();
             setupMouseInteraction();
             setupVR();
 
@@ -5071,6 +5072,41 @@
             createPottedPlant(18 - plantOffsetFromWall, gapCenterOffset);
         }
 
+        function addPhotoToWall() {
+    const loader = new THREE.TextureLoader();
+    loader.load('https://drdeas.github.io/TestLibraryEnvironment1/dr_king_labor.png', (texture) => {
+        // Set texture properties
+        texture.encoding = THREE.sRGBEncoding;
+        
+        // Create photo frame geometry - adjust size as needed
+        const photoWidth = 4;
+        const photoHeight = 3;
+        const frameThickness = 0.1;
+        
+        // Create the photo plane
+        const photoGeometry = new THREE.PlaneGeometry(photoWidth, photoHeight);
+        const photoMaterial = new THREE.MeshLambertMaterial({ map: texture });
+        const photo = new THREE.Mesh(photoGeometry, photoMaterial);
+        
+        // Position the photo on the front wall (entrance wall)
+        // Adjust x, y, z coordinates as needed
+        photo.position.set(0, 4, LIBRARY_DEPTH / 2 - 0.01); // Slightly in front of the wall
+        photo.castShadow = true;
+        
+        // Optional: Add a simple frame
+        const frameGeometry = new THREE.PlaneGeometry(photoWidth + 0.3, photoHeight + 0.3);
+        const frameMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+        const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+        frame.position.set(0, 4, LIBRARY_DEPTH / 2 - 0.02); // Behind the photo
+        
+        scene.add(frame);
+        scene.add(photo);
+    }, undefined, (error) => {
+        console.error('Error loading photo:', error);
+    });
+}
+
+        
         function createBookCover(book, x, y, z, parentGroup) {
             const bookGeometry = new THREE.BoxGeometry(BOOK_WIDTH, BOOK_HEIGHT, BOOK_THICKNESS);
             const loader = new THREE.TextureLoader();
