@@ -306,41 +306,41 @@
         // =============================================================================
         const books = [
             {
-    "number": 1,
-    "title": "Begin Again: James Baldwin's America and Its Urgent Lessons for Our Own",
-    "author": "Eddie S. Glaude, Jr.",
-    "category": "Biography",
-    "ownership": "Digital",
-    "status": "Finished",
-    "dateCompleted": "2020-10-03",
-    "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00001.jpg",
-    "id": 1,
-    "summary": "This book offers a powerful examination of American history and identity through the lens of James Baldwin's work. It delves into Baldwin's observations on race, democracy, and the ongoing struggle for justice in the United States, drawing parallels between his era and contemporary challenges. The author argues that Baldwin's insights remain urgently relevant, urging readers to confront uncomfortable truths about the nation's past and present to forge a more equitable future."
-  },
-  {
-    "number": 2,
-    "title": "David and Goliath: Underdogs, Misfits, and the Art of Battling Giants",
-    "author": "Malcolm Gladwell",
-    "category": "Social Science(s)",
-    "ownership": "Physical",
-    "status": "Finished",
-    "dateCompleted": "2020-10-08",
-    "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00002.jpg",
-    "id": 2,
-    "summary": "This book explores the dynamics of encounters between the powerful and the seemingly weak, challenging conventional wisdom about advantages and disadvantages. It argues that what appears to be a weakness can often be a source of unexpected strength, and that seemingly insurmountable odds can be overcome through unconventional strategies and a refusal to conform to traditional expectations. Through a series of compelling stories and examples, the author illustrates how underdogs can defy expectations and achieve remarkable success by leveraging their unique circumstances and embracing alternative approaches."
-  },
-  {
-    "number": 3,
-    "title": "Talking to Strangers: What We Should Know about the People We Don't Know",
-    "author": "Malcolm Gladwell",
-    "category": "Social Science(s)",
-    "ownership": "Digital",
-    "status": "Finished",
-    "dateCompleted": "2020-10-13",
-    "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00003.jpg",
-    "id": 3,
-    "summary": "This book explores the misunderstandings and miscommunications that arise when people interact with strangers. It delves into the various tools and strategies individuals use to make sense of those they don't know, and how these methods can often lead to incorrect assumptions and catastrophic errors. Through a series of compelling stories and case studies, the author examines why trusting strangers can be both essential and dangerous, highlighting the complexities of human interaction and the importance of re-evaluating our default approaches to engaging with the unknown."
-  }
+                "number": 1,
+                "title": "Begin Again: James Baldwin's America and Its Urgent Lessons for Our Own",
+                "author": "Eddie S. Glaude, Jr.",
+                "category": "Biography",
+                "ownership": "Digital",
+                "status": "Finished",
+                "dateCompleted": "2020-10-03",
+                "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00001.jpg",
+                "id": 1,
+                "summary": "This book offers a powerful examination of American history and identity through the lens of James Baldwin's work. It delves into Baldwin's observations on race, democracy, and the ongoing struggle for justice in the United States, drawing parallels between his era and contemporary challenges. The author argues that Baldwin's insights remain urgently relevant, urging readers to confront uncomfortable truths about the nation's past and present to forge a more equitable future."
+            },
+            {
+                "number": 2,
+                "title": "David and Goliath: Underdogs, Misfits, and the Art of Battling Giants",
+                "author": "Malcolm Gladwell",
+                "category": "Social Science(s)",
+                "ownership": "Physical",
+                "status": "Finished",
+                "dateCompleted": "2020-10-08",
+                "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00002.jpg",
+                "id": 2,
+                "summary": "This book explores the dynamics of encounters between the powerful and the seemingly weak, challenging conventional wisdom about advantages and disadvantages. It argues that what appears to be a weakness can often be a source of unexpected strength, and that seemingly insurmountable odds can be overcome through unconventional strategies and a refusal to conform to traditional expectations. Through a series of compelling stories and examples, the author illustrates how underdogs can defy expectations and achieve remarkable success by leveraging their unique circumstances and embracing alternative approaches."
+            },
+            {
+                "number": 3,
+                "title": "Talking to Strangers: What We Should Know about the People We Don't Know",
+                "author": "Malcolm Gladwell",
+                "category": "Social Science(s)",
+                "ownership": "Digital",
+                "status": "Finished",
+                "dateCompleted": "2020-10-13",
+                "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00003.jpg",
+                "id": 3,
+                "summary": "This book explores the misunderstandings and miscommunications that arise when people interact with strangers. It delves into the various tools and strategies individuals use to make sense of those they don't know, and how these methods can often lead to incorrect assumptions and catastrophic errors. Through a series of compelling stories and case studies, the author examines why trusting strangers can be both essential and dangerous, highlighting the complexities of human interaction and the importance of re-evaluating our default approaches to engaging with the unknown."
+            }
         ];
 
         // =============================================================================
@@ -415,7 +415,6 @@
             inputController.connect();
             playerController = new PlayerController(camera, renderer.domElement);
 
-            
             createLighting();
             createLibraryEnvironment();
             createBookShelves();
@@ -750,11 +749,26 @@
             scene.add(floor);
 
             const wallMaterial = new THREE.MeshLambertMaterial({ color: 0x2a2a3e });
+            const ceilingMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x1f1f2d,
+                transparent: true,
+                opacity: 0.95 
+            });
 
+            // Walls
             const backWall = new THREE.Mesh(new THREE.PlaneGeometry(LIBRARY_WIDTH, LIBRARY_HEIGHT), wallMaterial);
             backWall.position.set(0, LIBRARY_HEIGHT / 2, -LIBRARY_DEPTH / 2);
             backWall.receiveShadow = true;
             scene.add(backWall);
+
+            // Front wall (entrance wall with slightly lower opacity for openness)
+            const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(LIBRARY_WIDTH, LIBRARY_HEIGHT), wallMaterial.clone());
+            frontWall.material.transparent = true;
+            frontWall.material.opacity = 0.7;
+            frontWall.position.set(0, LIBRARY_HEIGHT / 2, LIBRARY_DEPTH / 2);
+            frontWall.rotation.y = Math.PI;
+            frontWall.receiveShadow = true;
+            scene.add(frontWall);
 
             const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(LIBRARY_DEPTH, LIBRARY_HEIGHT), wallMaterial);
             leftWall.position.set(-LIBRARY_WIDTH / 2, LIBRARY_HEIGHT / 2, 0);
@@ -767,6 +781,35 @@
             rightWall.rotation.y = -Math.PI / 2;
             rightWall.receiveShadow = true;
             scene.add(rightWall);
+
+            // Ceiling
+            const ceilingGeometry = new THREE.PlaneGeometry(LIBRARY_WIDTH, LIBRARY_DEPTH);
+            const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+            ceiling.rotation.x = Math.PI / 2;
+            ceiling.position.y = LIBRARY_HEIGHT;
+            ceiling.receiveShadow = true;
+            scene.add(ceiling);
+
+            // Optional: Add ceiling beams for architectural detail
+            const beamMaterial = new THREE.MeshLambertMaterial({ color: 0x4a3a2a });
+            const beamGeometry = new THREE.BoxGeometry(LIBRARY_WIDTH, 0.3, 0.8);
+            
+            // Create parallel ceiling beams
+            for (let i = -3; i <= 3; i++) {
+                const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+                beam.position.set(0, LIBRARY_HEIGHT - 0.15, i * 6);
+                beam.castShadow = true;
+                scene.add(beam);
+            }
+
+            // Cross beams
+            const crossBeamGeometry = new THREE.BoxGeometry(0.8, 0.3, LIBRARY_DEPTH);
+            for (let i = -2; i <= 2; i++) {
+                const crossBeam = new THREE.Mesh(crossBeamGeometry, beamMaterial);
+                crossBeam.position.set(i * 8, LIBRARY_HEIGHT - 0.15, 0);
+                crossBeam.castShadow = true;
+                scene.add(crossBeam);
+            }
         }
 
         function createBookShelves() {
