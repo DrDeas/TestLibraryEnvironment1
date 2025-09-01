@@ -5090,14 +5090,14 @@
         
         // Position the photo on the front wall (entrance wall)
         // Adjust x, y, z coordinates as needed
-        photo.position.set(0, 4, LIBRARY_DEPTH / 2 - 0.01); // Slightly in front of the wall
+        photo.position.set(0, 4, LIBRARY_DEPTH / 2 - 0.5); // Slightly in front of the wall
         photo.castShadow = true;
         
         // Optional: Add a simple frame
         const frameGeometry = new THREE.PlaneGeometry(photoWidth + 0.3, photoHeight + 0.3);
         const frameMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
         const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-        frame.position.set(0, 4, LIBRARY_DEPTH / 2 - 0.02); // Behind the photo
+        frame.position.set(0, 4, LIBRARY_DEPTH / 2 - 0.6); // Behind the photo
         
         scene.add(frame);
         scene.add(photo);
