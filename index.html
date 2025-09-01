@@ -56,6 +56,10 @@
             font-size: 14px;
         }
 
+        #info p:nth-child(n+4):nth-child(-n+6) {
+            padding-left: 20px;
+        }
+        
         #vrButton {
             position: absolute;
             bottom: 20px;
@@ -80,6 +84,60 @@
             cursor: not-allowed;
         }
 
+        #navigationTool {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(26, 26, 46, 0.9);
+            border: 2px solid var(--primary-brown);
+            border-radius: 8px;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
+            gap: 5px;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-brown);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-brown-hover);
+        }
+
+        .nav-btn:active {
+            background: #4a3829;
+            transform: scale(0.95);
+        }
+
+        .nav-btn:disabled {
+            background: var(--disabled-bg);
+            cursor: not-allowed;
+        }
+
+        #navUp { grid-column: 2; grid-row: 1; }
+        #navDown { grid-column: 2; grid-row: 3; }
+        #navLeft { grid-column: 1; grid-row: 2; }
+        #navRight { grid-column: 3; grid-row: 2; }
+        #navForward { grid-column: 1; grid-row: 3; font-size: 10px; }
+        #navBackward { grid-column: 3; grid-row: 3; font-size: 10px; }
+        #navRotateLeft { grid-column: 1; grid-row: 1; font-size: 10px; }
+        #navRotateRight { grid-column: 3; grid-row: 1; font-size: 10px; }
+        
         canvas {
             display: block;
             cursor: pointer;
@@ -177,6 +235,24 @@
             .modal-content {
                 width: 95%;
                 margin: 2% auto;
+                max-width: none;
+                padding: 15px;
+                box-sizing: border-box;
+            }
+
+            #navigationTool {
+                bottom: 60px;
+                right: 10px;
+                padding: 8px;
+                grid-template-columns: repeat(3, 40px);
+                grid-template-rows: repeat(3, 40px);
+                gap: 4px;
+            }
+
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 10px;
             }
         }
     </style>
@@ -184,11 +260,25 @@
 <body>
     <div id="info">
         <h3>Dr. Deas Virtual Library</h3>
-        <p>Click "Enter VR" to experience in your Oculus headset</p>
-        <p>Desktop: Arrow keys to move, WASD (W=up, S=down, A=rotate left, D=rotate right), R to reset view, Click canvas to lock mouse, Mouse to look, Click books to view details</p>
-        <p>Books loaded: <span id="bookCount">0</span></p>
+        <p>Click "Enter VR" in any supported VR headset</p>
+        <p>Desktop: Use arrow keys (↑↓←→) to explore</p>
+        <p>● W/S keys: Move vertically up/down</p>
+        <p>● A/D keys: Rotate left/right</p>
+        <p>● R key: Reset view</p>
+        <p>Books loaded: <span id="bookCount" style="color: var(--accent-gold); font-weight: bold;">0</span> (Click books to view details)</p>
     </div>
     <button id="vrButton">Enter VR</button>
+
+    <div id="navigationTool">
+        <button class="nav-btn" id="navRotateLeft" aria-label="Rotate Left">↺ L</button>
+        <button class="nav-btn" id="navUp" aria-label="Move Up">▲</button>
+        <button class="nav-btn" id="navRotateRight" aria-label="Rotate Right">↻ R</button>
+        <button class="nav-btn" id="navLeft" aria-label="Move Left">◄</button>
+        <button class="nav-btn" id="navForward" aria-label="Move Forward">FWD</button>
+        <button class="nav-btn" id="navRight" aria-label="Move Right">►</button>
+        <button class="nav-btn" id="navBackward" aria-label="Move Backward">BWD</button>
+        <button class="nav-btn" id="navDown" aria-label="Move Down">▼</button>
+    </div>
 
     <div id="bookModal" class="modal">
         <div class="modal-content">
@@ -212,46 +302,45 @@
 
     <script>
         // =============================================================================
-        // DATA - First 3 books only
+        // DATA
         // =============================================================================
-
         const books = [
             {
-                "number": 1,
-                "title": "Begin Again: James Baldwin's America and Its Urgent Lessons for Our Own",
-                "author": "Eddie S. Glaude, Jr.",
-                "category": "Biography",
-                "ownership": "Digital",
-                "status": "Finished",
-                "dateCompleted": "2020-10-03",
-                "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00001.jpg",
-                "id": 1,
-                "summary": "This book offers a powerful examination of American history and identity through the lens of James Baldwin's work. It delves into Baldwin's observations on race, democracy, and the ongoing struggle for justice in the United States, drawing parallels between his era and contemporary challenges. The author argues that Baldwin's insights remain urgently relevant, urging readers to confront uncomfortable truths about the nation's past and present to forge a more equitable future."
-            },
-            {
-                "number": 2,
-                "title": "David and Goliath: Underdogs, Misfits, and the Art of Battling Giants",
-                "author": "Malcolm Gladwell",
-                "category": "Social Science(s)",
-                "ownership": "Physical",
-                "status": "Finished",
-                "dateCompleted": "2020-10-08",
-                "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00002.jpg",
-                "id": 2,
-                "summary": "This book explores the dynamics of encounters between the powerful and the seemingly weak, challenging conventional wisdom about advantages and disadvantages. It argues that what appears to be a weakness can often be a source of unexpected strength, and that seemingly insurmountable odds can be overcome through unconventional strategies and a refusal to conform to traditional expectations. Through a series of compelling stories and examples, the author illustrates how underdogs can defy expectations and achieve remarkable success by leveraging their unique circumstances and embracing alternative approaches."
-            },
-            {
-                "number": 3,
-                "title": "Talking to Strangers: What We Should Know about the People We Don't Know",
-                "author": "Malcolm Gladwell",
-                "category": "Social Science(s)",
-                "ownership": "Digital",
-                "status": "Finished",
-                "dateCompleted": "2020-10-13",
-                "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00003.jpg",
-                "id": 3,
-                "summary": "This book explores the misunderstandings and miscommunications that arise when people interact with strangers. It delves into the various tools and strategies individuals use to make sense of those they don't know, and how these methods can often lead to incorrect assumptions and catastrophic errors. Through a series of compelling stories and case studies, the author examines why trusting strangers can be both essential and dangerous, highlighting the complexities of human interaction and the importance of re-evaluating our default approaches to engaging with the unknown."
-            }
+    "number": 1,
+    "title": "Begin Again: James Baldwin's America and Its Urgent Lessons for Our Own",
+    "author": "Eddie S. Glaude, Jr.",
+    "category": "Biography",
+    "ownership": "Digital",
+    "status": "Finished",
+    "dateCompleted": "2020-10-03",
+    "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00001.jpg",
+    "id": 1,
+    "summary": "This book offers a powerful examination of American history and identity through the lens of James Baldwin's work. It delves into Baldwin's observations on race, democracy, and the ongoing struggle for justice in the United States, drawing parallels between his era and contemporary challenges. The author argues that Baldwin's insights remain urgently relevant, urging readers to confront uncomfortable truths about the nation's past and present to forge a more equitable future."
+  },
+  {
+    "number": 2,
+    "title": "David and Goliath: Underdogs, Misfits, and the Art of Battling Giants",
+    "author": "Malcolm Gladwell",
+    "category": "Social Science(s)",
+    "ownership": "Physical",
+    "status": "Finished",
+    "dateCompleted": "2020-10-08",
+    "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00002.jpg",
+    "id": 2,
+    "summary": "This book explores the dynamics of encounters between the powerful and the seemingly weak, challenging conventional wisdom about advantages and disadvantages. It argues that what appears to be a weakness can often be a source of unexpected strength, and that seemingly insurmountable odds can be overcome through unconventional strategies and a refusal to conform to traditional expectations. Through a series of compelling stories and examples, the author illustrates how underdogs can defy expectations and achieve remarkable success by leveraging their unique circumstances and embracing alternative approaches."
+  },
+  {
+    "number": 3,
+    "title": "Talking to Strangers: What We Should Know about the People We Don't Know",
+    "author": "Malcolm Gladwell",
+    "category": "Social Science(s)",
+    "ownership": "Digital",
+    "status": "Finished",
+    "dateCompleted": "2020-10-13",
+    "customCoverUrl": "https://raw.githubusercontent.com/DrDeas/DrDeasBookLog/refs/heads/main/images/Book_00003.jpg",
+    "id": 3,
+    "summary": "This book explores the misunderstandings and miscommunications that arise when people interact with strangers. It delves into the various tools and strategies individuals use to make sense of those they don't know, and how these methods can often lead to incorrect assumptions and catastrophic errors. Through a series of compelling stories and case studies, the author examines why trusting strangers can be both essential and dangerous, highlighting the complexities of human interaction and the importance of re-evaluating our default approaches to engaging with the unknown."
+  }
         ];
 
         // =============================================================================
@@ -295,6 +384,11 @@
             modal = document.getElementById('bookModal');
             closeBtn = document.querySelector('.close');
 
+            if (!modal || !closeBtn) {
+                console.error('Required DOM elements not found');
+                return;
+            }
+
             closeBtn.onclick = () => { modal.style.display = 'none'; };
             window.onclick = (event) => { if (event.target == modal) modal.style.display = 'none'; };
 
@@ -321,6 +415,7 @@
             inputController.connect();
             playerController = new PlayerController(camera, renderer.domElement);
 
+            
             createLighting();
             createLibraryEnvironment();
             createBookShelves();
@@ -329,12 +424,18 @@
             setupVR();
 
             document.getElementById('bookCount').textContent = books.length;
+            setupNavigationTool();
             window.addEventListener('resize', onWindowResize);
             animate();
         }
 
         function setupVR() {
             vrButton = document.getElementById('vrButton');
+            if (!vrButton) {
+                console.error('VR button not found');
+                return;
+            }
+
             if ('xr' in navigator) {
                 navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
                     if (supported) {
@@ -358,6 +459,10 @@
                         vrButton.textContent = 'VR Not Supported';
                         vrButton.disabled = true;
                     }
+                }).catch((error) => {
+                    console.error('Error checking VR support:', error);
+                    vrButton.textContent = 'VR Error';
+                    vrButton.disabled = true;
                 });
             } else {
                 vrButton.textContent = 'VR Not Supported';
@@ -365,6 +470,59 @@
             }
         }
 
+        function setupNavigationTool() {
+            const navButtons = {
+                navUp: { action: 'moveVertical', value: 1 },
+                navDown: { action: 'moveVertical', value: -1 },
+                navLeft: { action: 'moveStrafe', value: -1 },
+                navRight: { action: 'moveStrafe', value: 1 },
+                navForward: { action: 'moveForward', value: -1 },
+                navBackward: { action: 'moveForward', value: 1 },
+                navRotateLeft: { action: 'lookHorizontal', value: -1 },
+                navRotateRight: { action: 'lookHorizontal', value: 1 }
+            };
+
+            Object.keys(navButtons).forEach(buttonId => {
+                const button = document.getElementById(buttonId);
+                if (!button) {
+                    console.error(`Navigation button ${buttonId} not found`);
+                    return;
+                }
+
+                const config = navButtons[buttonId];
+                let isPressed = false;
+
+                const startAction = (e) => {
+                    if (e) e.preventDefault();
+                    if (isPressed) return;
+                    isPressed = true;
+                    inputController.setButtonAction(config.action, config.value);
+                    button.classList.add('active');
+                };
+
+                const stopAction = (e) => {
+                    if (e) e.preventDefault();
+                    if (!isPressed) return;
+                    isPressed = false;
+                    inputController.setButtonAction(config.action, 0);
+                    button.classList.remove('active');
+                };
+
+                // Mouse events
+                button.addEventListener('mousedown', startAction);
+                button.addEventListener('mouseup', stopAction);
+                button.addEventListener('mouseleave', stopAction);
+
+                // Touch events for mobile
+                button.addEventListener('touchstart', startAction, { passive: false });
+                button.addEventListener('touchend', stopAction, { passive: false });
+                button.addEventListener('touchcancel', stopAction, { passive: false });
+
+                // Prevent context menu
+                button.addEventListener('contextmenu', (e) => e.preventDefault());
+            });
+        }
+        
         // =============================================================================
         // CONTROLS & INTERACTIONS
         // =============================================================================
@@ -375,6 +533,12 @@
         class InputController {
             constructor() {
                 this.keys = new Set();
+                this.buttonActions = {
+                    moveForward: 0,
+                    moveStrafe: 0,
+                    moveVertical: 0,
+                    lookHorizontal: 0
+                };
                 this.actions = {
                     moveForward: 0,
                     moveStrafe: 0,
@@ -402,6 +566,12 @@
                     this.actions.reset = true;
                 }
             }
+
+            setButtonAction(action, value) {
+                if (this.buttonActions.hasOwnProperty(action)) {
+                    this.buttonActions[action] = value;
+                }
+            }
             
             update() {
                 // Arrow key movement (forward/backward/strafe)
@@ -416,11 +586,17 @@
                 const aKey = this.keys.has('KeyA');  // Rotate left
                 const dKey = this.keys.has('KeyD');  // Rotate right
 
-                // Set movement actions
-                this.actions.moveForward = Number(arrowBwd) - Number(arrowFwd);
-                this.actions.moveStrafe = Number(arrowRight) - Number(arrowLeft);
-                this.actions.moveVertical = Number(wKey) - Number(sKey);
-                this.actions.lookHorizontal = Number(dKey) - Number(aKey);
+                // Combine keyboard and button inputs
+                this.actions.moveForward = (Number(arrowBwd) - Number(arrowFwd)) + this.buttonActions.moveForward;
+                this.actions.moveStrafe = (Number(arrowRight) - Number(arrowLeft)) + this.buttonActions.moveStrafe;
+                this.actions.moveVertical = (Number(wKey) - Number(sKey)) + this.buttonActions.moveVertical;
+                this.actions.lookHorizontal = (Number(dKey) - Number(aKey)) + this.buttonActions.lookHorizontal;
+
+                // Clamp values to prevent excessive speed
+                this.actions.moveForward = Math.max(-1, Math.min(1, this.actions.moveForward));
+                this.actions.moveStrafe = Math.max(-1, Math.min(1, this.actions.moveStrafe));
+                this.actions.moveVertical = Math.max(-1, Math.min(1, this.actions.moveVertical));
+                this.actions.lookHorizontal = Math.max(-1, Math.min(1, this.actions.lookHorizontal));
             }
         }
 
@@ -745,10 +921,19 @@
             bookMesh.castShadow = true;
             bookMesh.userData = { book };
             loader.load(book.customCoverUrl, (texture) => {
+                // Ensure the texture colors are preserved
+                texture.encoding = THREE.sRGBEncoding;
+                texture.flipY = true;
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+                
                 const materials = [
-                    new THREE.MeshPhongMaterial({ color: 0x5d4d37 }), new THREE.MeshPhongMaterial({ color: 0x5d4d37 }),
-                    new THREE.MeshPhongMaterial({ color: 0x5d4d37 }), new THREE.MeshPhongMaterial({ color: 0x5d4d37 }),
-                    new THREE.MeshBasicMaterial({ map: texture }), new THREE.MeshPhongMaterial({ color: 0x5d4d37 })
+                    new THREE.MeshLambertMaterial({ color: 0x5d4d37 }), // Right
+                    new THREE.MeshLambertMaterial({ color: 0x5d4d37 }), // Left  
+                    new THREE.MeshLambertMaterial({ color: 0x5d4d37 }), // Top
+                    new THREE.MeshLambertMaterial({ color: 0x5d4d37 }), // Bottom
+                    new THREE.MeshLambertMaterial({ map: texture }), // Front (book cover)
+                    new THREE.MeshLambertMaterial({ color: 0x5d4d37 })  // Back
                 ];
                 bookMesh.material = materials;
             }, undefined, () => createFallbackCover(bookMesh, book));
