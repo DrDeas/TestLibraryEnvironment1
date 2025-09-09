@@ -4925,9 +4925,18 @@
             const totalBookcasesNeeded = Math.ceil(books.length / BOOKS_PER_BOOKCASE);
 
             const bookcaseLayout = [
+                // Back wall (3 bookcases)
                 { pos: new THREE.Vector3(-(BOOKCASE_WIDTH + BOOKCASE_SPACING), 0, -18), rotY: 0 },
                 { pos: new THREE.Vector3(0, 0, -18), rotY: 0 },
-                { pos: new THREE.Vector3((BOOKCASE_WIDTH + BOOKCASE_SPACING), 0, -18), rotY: 0 }
+                { pos: new THREE.Vector3((BOOKCASE_WIDTH + BOOKCASE_SPACING), 0, -18), rotY: 0 },
+                // Left wall (3 bookcases)
+                { pos: new THREE.Vector3(-18, 0, -(BOOKCASE_WIDTH + BOOKCASE_SPACING)), rotY: Math.PI / 2 },
+                { pos: new THREE.Vector3(-18, 0, 0), rotY: Math.PI / 2 },
+                { pos: new THREE.Vector3(-18, 0, (BOOKCASE_WIDTH + BOOKCASE_SPACING)), rotY: Math.PI / 2 },
+                // Right wall (3 bookcases)
+                { pos: new THREE.Vector3(18, 0, -(BOOKCASE_WIDTH + BOOKCASE_SPACING)), rotY: -Math.PI / 2 },
+                { pos: new THREE.Vector3(18, 0, 0), rotY: -Math.PI / 2 },
+                { pos: new THREE.Vector3(18, 0, (BOOKCASE_WIDTH + BOOKCASE_SPACING)), rotY: -Math.PI / 2 }
             ];
             
             for (let i = 0; i < totalBookcasesNeeded && i < bookcaseLayout.length; i++) {
