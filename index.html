@@ -4817,35 +4817,530 @@
             floor.receiveShadow = true;
             scene.add(floor);
 
-            // Grass areas
-            createGrassAreas();
+            // Japanese Garden
+            createJapaneseGarden();
             // Mansion walls
             createMansionWalls();
             // Ornate ceiling
             createOrnateCompartmentCeiling();
         }
 
-        function createGrassAreas() {
-            const grassMaterial = new THREE.MeshLambertMaterial({ color: 0x228B22 });
-            
-            const grassPatches = [
-                { pos: [-35, 0, -35], size: [15, 15] },
-                { pos: [35, 0, -35], size: [15, 15] },
-                { pos: [-35, 0, 35], size: [15, 15] },
-                { pos: [35, 0, 35], size: [15, 15] },
-                { pos: [0, 0, 40], size: [25, 10] },
-                { pos: [0, 0, -40], size: [25, 10] }
-            ];
+        function createJapaneseGarden() {
+    createJapaneseGrassAreas();
+    createBambooGroves();
+    createJapaneseTrees();
+    createStonePathways();
+    createKoiPonds();
+    createJapaneseLanterns();
+    createRockGardens();
+    createJapaneseBridges();
+}
 
-            grassPatches.forEach(patch => {
-                const grassGeometry = new THREE.PlaneGeometry(patch.size[0], patch.size[1]);
-                const grass = new THREE.Mesh(grassGeometry, grassMaterial);
-                grass.rotation.x = -Math.PI / 2;
-                grass.position.set(patch.pos[0], patch.pos[1], patch.pos[2]);
-                grass.receiveShadow = true;
-                scene.add(grass);
-            });
+function createJapaneseGrassAreas() {
+    const mossGreenMaterial = new THREE.MeshLambertMaterial({ color: 0x2d5a2d });
+    const brightGreenMaterial = new THREE.MeshLambertMaterial({ color: 0x3a7c3a });
+    
+    // Replace existing grass areas with Japanese garden moss and grass
+    const japaneseGrassPatches = [
+        // Moss areas (darker green)
+        { pos: [-35, 0.01, -35], size: [18, 18], material: mossGreenMaterial },
+        { pos: [35, 0.01, -35], size: [18, 18], material: mossGreenMaterial },
+        { pos: [-35, 0.01, 35], size: [18, 18], material: brightGreenMaterial },
+        { pos: [35, 0.01, 35], size: [18, 18], material: brightGreenMaterial },
+        
+        // Central garden areas
+        { pos: [0, 0.01, 40], size: [30, 15], material: brightGreenMaterial },
+        { pos: [0, 0.01, -45], size: [30, 10], material: mossGreenMaterial },
+        
+        // Side garden strips
+        { pos: [-45, 0.01, 0], size: [10, 40], material: mossGreenMaterial },
+        { pos: [45, 0.01, 0], size: [10, 40], material: brightGreenMaterial }
+    ];
+
+    japaneseGrassPatches.forEach(patch => {
+        const grassGeometry = new THREE.PlaneGeometry(patch.size[0], patch.size[1]);
+        const grass = new THREE.Mesh(grassGeometry, patch.material);
+        grass.rotation.x = -Math.PI / 2;
+        grass.position.set(patch.pos[0], patch.pos[1], patch.pos[2]);
+        grass.receiveShadow = true;
+        scene.add(grass);
+    });
+}
+
+function createBambooGroves() {
+    const bambooMaterial = new THREE.MeshLambertMaterial({ color: 0x4a6741 });
+    const bambooCulms = [
+        // Left bamboo grove
+        { pos: [-40, 0, -20], count: 8 },
+        { pos: [-38, 0, -25], count: 6 },
+        { pos: [-42, 0, -15], count: 5 },
+        
+        // Right bamboo grove
+        { pos: [40, 0, -20], count: 7 },
+        { pos: [38, 0, -25], count: 6 },
+        { pos: [42, 0, -15], count: 4 },
+        
+        // Back corner groves
+        { pos: [-25, 0, -45], count: 5 },
+        { pos: [25, 0, -45], count: 5 }
+    ];
+
+    bambooCulms.forEach(grove => {
+        for (let i = 0; i < grove.count; i++) {
+            const bambooGroup = new THREE.Group();
+            
+            // Main bamboo culm
+            const culmGeometry = new THREE.CylinderGeometry(0.15, 0.12, 8 + Math.random() * 4, 8);
+            const culm = new THREE.Mesh(culmGeometry, bambooMaterial);
+            culm.position.y = (8 + Math.random() * 4) / 2;
+            culm.castShadow = true;
+            bambooGroup.add(culm);
+            
+            // Bamboo nodes
+            for (let j = 1; j < 6; j++) {
+                const nodeGeometry = new THREE.TorusGeometry(0.16, 0.02, 4, 8);
+                const node = new THREE.Mesh(nodeGeometry, new THREE.MeshLambertMaterial({ color: 0x3a5a35 }));
+                node.position.y = j * 2;
+                node.rotation.x = Math.PI / 2;
+                bambooGroup.add(node);
+            }
+            
+            // Position with some randomness
+            bambooGroup.position.set(
+                grove.pos[0] + (Math.random() - 0.5) * 6,
+                grove.pos[1],
+                grove.pos[2] + (Math.random() - 0.5) * 6
+            );
+            
+            scene.add(bambooGroup);
+            collisionMeshes.push(bambooGroup);
         }
+    });
+}
+
+function createJapaneseTrees() {
+    // Cherry blossom trees
+    createCherryBlossomTree(-20, 0, 25);
+    createCherryBlossomTree(20, 0, 25);
+    createCherryBlossomTree(-30, 0, 5);
+    createCherryBlossomTree(30, 0, 5);
+    
+    // Pine trees
+    createJapanesePine(-15, 0, -35);
+    createJapanesePine(15, 0, -35);
+    createJapanesePine(35, 0, 20);
+    createJapanesePine(-35, 0, 20);
+}
+
+function createCherryBlossomTree(x, y, z) {
+    const treeGroup = new THREE.Group();
+    
+    // Trunk
+    const trunkGeometry = new THREE.CylinderGeometry(0.4, 0.6, 5, 8);
+    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x4a3c28 });
+    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+    trunk.position.y = 2.5;
+    trunk.castShadow = true;
+    treeGroup.add(trunk);
+    
+    // Main branches
+    for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2;
+        const branchGeometry = new THREE.CylinderGeometry(0.1, 0.2, 3, 6);
+        const branch = new THREE.Mesh(branchGeometry, trunkMaterial);
+        branch.position.set(
+            Math.cos(angle) * 1.5,
+            4 + Math.random(),
+            Math.sin(angle) * 1.5
+        );
+        branch.rotation.z = angle + Math.PI / 2;
+        branch.rotation.x = Math.PI / 6;
+        branch.castShadow = true;
+        treeGroup.add(branch);
+    }
+    
+    // Cherry blossom clusters
+    const blossomMaterial = new THREE.MeshLambertMaterial({ 
+        color: 0xffb6c1,
+        transparent: true,
+        opacity: 0.8
+    });
+    
+    for (let i = 0; i < 20; i++) {
+        const blossomGeometry = new THREE.SphereGeometry(0.3, 6, 6);
+        const blossom = new THREE.Mesh(blossomGeometry, blossomMaterial);
+        blossom.position.set(
+            (Math.random() - 0.5) * 6,
+            3 + Math.random() * 3,
+            (Math.random() - 0.5) * 6
+        );
+        treeGroup.add(blossom);
+    }
+    
+    treeGroup.position.set(x, y, z);
+    scene.add(treeGroup);
+    collisionMeshes.push(treeGroup);
+}
+
+function createJapanesePine(x, y, z) {
+    const treeGroup = new THREE.Group();
+    
+    // Trunk
+    const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.5, 8, 8);
+    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x3d2f1f });
+    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+    trunk.position.y = 4;
+    trunk.castShadow = true;
+    treeGroup.add(trunk);
+    
+    // Pine needle layers
+    const needleMaterial = new THREE.MeshLambertMaterial({ color: 0x1a4a1a });
+    
+    for (let i = 0; i < 5; i++) {
+        const radius = 3 - (i * 0.4);
+        const needleGeometry = new THREE.ConeGeometry(radius, 2, 8);
+        const needleLayer = new THREE.Mesh(needleGeometry, needleMaterial);
+        needleLayer.position.y = 5 + (i * 1.2);
+        needleLayer.castShadow = true;
+        treeGroup.add(needleLayer);
+    }
+    
+    treeGroup.position.set(x, y, z);
+    scene.add(treeGroup);
+    collisionMeshes.push(treeGroup);
+}
+
+function createStonePathways() {
+    const stoneMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x808080,
+        roughness: 0.8,
+        metalness: 0.1
+    });
+    
+    // Main pathway stones
+    const pathStones = [
+        // Path from front to cherry trees
+        { pos: [0, 0.1, 35], size: [1.5, 0.2, 1.5] },
+        { pos: [-2, 0.1, 32], size: [1.2, 0.2, 1.2] },
+        { pos: [2, 0.1, 29], size: [1.3, 0.2, 1.3] },
+        { pos: [-1, 0.1, 26], size: [1.4, 0.2, 1.4] },
+        { pos: [1, 0.1, 23], size: [1.2, 0.2, 1.2] },
+        
+        // Path to left garden
+        { pos: [-8, 0.1, 20], size: [1.3, 0.2, 1.3] },
+        { pos: [-12, 0.1, 18], size: [1.2, 0.2, 1.2] },
+        { pos: [-16, 0.1, 16], size: [1.4, 0.2, 1.4] },
+        { pos: [-20, 0.1, 14], size: [1.3, 0.2, 1.3] },
+        
+        // Path to right garden
+        { pos: [8, 0.1, 20], size: [1.3, 0.2, 1.3] },
+        { pos: [12, 0.1, 18], size: [1.2, 0.2, 1.2] },
+        { pos: [16, 0.1, 16], size: [1.4, 0.2, 1.4] },
+        { pos: [20, 0.1, 14], size: [1.3, 0.2, 1.3] }
+    ];
+    
+    pathStones.forEach(stone => {
+        const stoneGeometry = new THREE.BoxGeometry(stone.size[0], stone.size[1], stone.size[2]);
+        const stoneMesh = new THREE.Mesh(stoneGeometry, stoneMaterial);
+        stoneMesh.position.set(stone.pos[0], stone.pos[1], stone.pos[2]);
+        stoneMesh.rotation.y = Math.random() * 0.5;
+        stoneMesh.castShadow = true;
+        stoneMesh.receiveShadow = true;
+        scene.add(stoneMesh);
+    });
+}
+
+function createKoiPonds() {
+    // Main koi pond
+    createSingleKoiPond(-25, 0, 15, 6);
+    // Smaller pond
+    createSingleKoiPond(25, 0, -10, 4);
+}
+
+function createSingleKoiPond(x, y, z, radius) {
+    const pondGroup = new THREE.Group();
+    
+    // Pond basin
+    const basinGeometry = new THREE.CylinderGeometry(radius, radius, 0.5, 32);
+    const basinMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x4a4a4a,
+        roughness: 0.9
+    });
+    const basin = new THREE.Mesh(basinGeometry, basinMaterial);
+    basin.position.y = -0.1;
+    basin.receiveShadow = true;
+    pondGroup.add(basin);
+    
+    // Water surface
+    const waterGeometry = new THREE.CylinderGeometry(radius - 0.2, radius - 0.2, 0.1, 32);
+    const waterMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x2c5aa0,
+        transparent: true,
+        opacity: 0.7,
+        roughness: 0.1,
+        metalness: 0.1
+    });
+    const water = new THREE.Mesh(waterGeometry, waterMaterial);
+    water.position.y = 0.2;
+    pondGroup.add(water);
+    
+    // Koi fish
+    for (let i = 0; i < 5; i++) {
+        const fishGeometry = new THREE.CapsuleGeometry(0.1, 0.4, 4, 8);
+        const fishColors = [0xff6b35, 0xffffff, 0xffd700, 0xff1744, 0x000000];
+        const fishMaterial = new THREE.MeshLambertMaterial({ 
+            color: fishColors[i % fishColors.length]
+        });
+        const fish = new THREE.Mesh(fishGeometry, fishMaterial);
+        const angle = (i / 5) * Math.PI * 2;
+        fish.position.set(
+            Math.cos(angle) * (radius - 1),
+            0.15,
+            Math.sin(angle) * (radius - 1)
+        );
+        fish.rotation.y = angle + Math.PI / 2;
+        pondGroup.add(fish);
+    }
+    
+    // Pond rocks
+    const rockMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
+    for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const rockGeometry = new THREE.SphereGeometry(0.3 + Math.random() * 0.3, 6, 6);
+        const rock = new THREE.Mesh(rockGeometry, rockMaterial);
+        rock.position.set(
+            Math.cos(angle) * (radius + 0.5),
+            0.15,
+            Math.sin(angle) * (radius + 0.5)
+        );
+        rock.castShadow = true;
+        pondGroup.add(rock);
+    }
+    
+    pondGroup.position.set(x, y, z);
+    scene.add(pondGroup);
+    collisionMeshes.push(pondGroup);
+}
+
+function createJapaneseLanterns() {
+    // Stone lanterns at key positions
+    createStoneLantern(-15, 0, 30);
+    createStoneLantern(15, 0, 30);
+    createStoneLantern(-30, 0, -5);
+    createStoneLantern(30, 0, -5);
+    createStoneLantern(0, 0, -40);
+}
+
+function createStoneLantern(x, y, z) {
+    const lanternGroup = new THREE.Group();
+    const stoneMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x9e9e9e,
+        roughness: 0.8
+    });
+    
+    // Base
+    const baseGeometry = new THREE.CylinderGeometry(0.8, 1.0, 0.5, 8);
+    const base = new THREE.Mesh(baseGeometry, stoneMaterial);
+    base.position.y = 0.25;
+    base.castShadow = true;
+    lanternGroup.add(base);
+    
+    // Pillar
+    const pillarGeometry = new THREE.CylinderGeometry(0.3, 0.3, 2, 8);
+    const pillar = new THREE.Mesh(pillarGeometry, stoneMaterial);
+    pillar.position.y = 1.5;
+    pillar.castShadow = true;
+    lanternGroup.add(pillar);
+    
+    // Lantern body
+    const bodyGeometry = new THREE.CylinderGeometry(0.6, 0.6, 1, 6);
+    const body = new THREE.Mesh(bodyGeometry, stoneMaterial);
+    body.position.y = 3;
+    body.castShadow = true;
+    lanternGroup.add(body);
+    
+    // Roof
+    const roofGeometry = new THREE.ConeGeometry(0.8, 0.5, 6);
+    const roof = new THREE.Mesh(roofGeometry, new THREE.MeshStandardMaterial({ color: 0x4a4a4a }));
+    roof.position.y = 3.75;
+    roof.castShadow = true;
+    lanternGroup.add(roof);
+    
+    // Light
+    const lightGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+    const lightMaterial = new THREE.MeshBasicMaterial({ 
+        color: 0xfff8dc,
+        transparent: true,
+        opacity: 0.8
+    });
+    const light = new THREE.Mesh(lightGeometry, lightMaterial);
+    light.position.y = 3;
+    lanternGroup.add(light);
+    
+    // Point light for illumination
+    const pointLight = new THREE.PointLight(0xfff8dc, 0.5, 10);
+    pointLight.position.y = 3;
+    pointLight.castShadow = true;
+    lanternGroup.add(pointLight);
+    
+    lanternGroup.position.set(x, y, z);
+    scene.add(lanternGroup);
+    collisionMeshes.push(lanternGroup);
+}
+
+function createRockGardens() {
+    // Zen rock garden areas
+    createZenGarden(-35, 0, -15);
+    createZenGarden(35, 0, 10);
+}
+
+function createZenGarden(x, y, z) {
+    const gardenGroup = new THREE.Group();
+    
+    // Sand/gravel base
+    const sandGeometry = new THREE.CircleGeometry(8, 32);
+    const sandMaterial = new THREE.MeshLambertMaterial({ color: 0xf5deb3 });
+    const sand = new THREE.Mesh(sandGeometry, sandMaterial);
+    sand.rotation.x = -Math.PI / 2;
+    sand.position.y = 0.01;
+    sand.receiveShadow = true;
+    gardenGroup.add(sand);
+    
+    // Large focal rocks
+    const rockMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x696969,
+        roughness: 0.9
+    });
+    
+    const rocks = [
+        { size: [1.5, 1.2, 1.0], pos: [0, 0.6, 0] },
+        { size: [1.0, 0.8, 0.8], pos: [2.5, 0.4, 1.5] },
+        { size: [0.8, 0.6, 0.6], pos: [-2, 0.3, -1] },
+        { size: [0.6, 0.5, 0.5], pos: [1, 0.25, -2.5] },
+        { size: [0.5, 0.4, 0.4], pos: [-1.5, 0.2, 2] }
+    ];
+    
+    rocks.forEach(rockData => {
+        const rockGeometry = new THREE.SphereGeometry(1, 8, 6);
+        rockGeometry.scale(rockData.size[0], rockData.size[1], rockData.size[2]);
+        const rock = new THREE.Mesh(rockGeometry, rockMaterial);
+        rock.position.set(rockData.pos[0], rockData.pos[1], rockData.pos[2]);
+        rock.castShadow = true;
+        gardenGroup.add(rock);
+    });
+    
+    gardenGroup.position.set(x, y, z);
+    scene.add(gardenGroup);
+    collisionMeshes.push(gardenGroup);
+}
+
+function createJapaneseBridges() {
+    // Arched bridge over imaginary stream
+    createArchedBridge(-10, 0, 5);
+    // Small stepping stone bridge
+    createSteppingStones(10, 0, 10);
+}
+
+function createArchedBridge(x, y, z) {
+    const bridgeGroup = new THREE.Group();
+    const woodMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x8b4513,
+        roughness: 0.7
+    });
+    
+    // Main arch structure
+    const archCurve = new THREE.EllipseCurve(0, 0, 3, 1.5, 0, Math.PI, false, 0);
+    const archPoints = archCurve.getPoints(20);
+    const archGeometry = new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3(archPoints.map(p => new THREE.Vector3(p.x, p.y, 0))),
+        20, 0.2, 8, false
+    );
+    const arch = new THREE.Mesh(archGeometry, woodMaterial);
+    arch.rotation.z = Math.PI;
+    arch.position.y = 1.5;
+    arch.castShadow = true;
+    bridgeGroup.add(arch);
+    
+    // Bridge deck
+    const deckGeometry = new THREE.BoxGeometry(6, 0.1, 1.5);
+    const deck = new THREE.Mesh(deckGeometry, woodMaterial);
+    deck.position.y = 0.05;
+    deck.castShadow = true;
+    bridgeGroup.add(deck);
+    
+    // Railings
+    for (let i = -2.5; i <= 2.5; i += 0.5) {
+        const postGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 6);
+        const post = new THREE.Mesh(postGeometry, woodMaterial);
+        post.position.set(i, 0.5, 0.6);
+        post.castShadow = true;
+        bridgeGroup.add(post);
+        
+        const post2 = new THREE.Mesh(postGeometry, woodMaterial);
+        post2.position.set(i, 0.5, -0.6);
+        post2.castShadow = true;
+        bridgeGroup.add(post2);
+    }
+    
+    bridgeGroup.position.set(x, y, z);
+    scene.add(bridgeGroup);
+    collisionMeshes.push(bridgeGroup);
+}
+
+function createSteppingStones(x, y, z) {
+    const stoneMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x708090,
+        roughness: 0.8
+    });
+    
+    const stonePositions = [
+        [0, 0.2, 0],
+        [1.5, 0.15, 0.5],
+        [3, 0.18, -0.3],
+        [4.5, 0.16, 0.2],
+        [6, 0.2, 0]
+    ];
+    
+    stonePositions.forEach(pos => {
+        const stoneGeometry = new THREE.CylinderGeometry(0.6, 0.7, 0.3, 8);
+        const stone = new THREE.Mesh(stoneGeometry, stoneMaterial);
+        stone.position.set(x + pos[0], y + pos[1], z + pos[2]);
+        stone.rotation.y = Math.random() * Math.PI;
+        stone.castShadow = true;
+        stone.receiveShadow = true;
+        scene.add(stone);
+    });
+}
+
+function animateJapaneseGarden() {
+    const time = Date.now() * 0.001;
+    
+    // Animate koi fish
+    scene.traverse((child) => {
+        if (child.isMesh && child.geometry && child.geometry.type === 'CapsuleGeometry') {
+            // Koi fish swimming motion
+            const radius = 3;
+            const speed = 0.5;
+            const fishAngle = time * speed + child.position.x;
+            child.position.x = Math.cos(fishAngle) * radius;
+            child.position.z = Math.sin(fishAngle) * radius;
+            child.rotation.y = fishAngle + Math.PI / 2;
+        }
+        
+        // Gentle sway for cherry blossoms
+        if (child.isMesh && child.material && child.material.color && 
+            child.material.color.getHex() === 0xffb6c1) {
+            child.position.y += Math.sin(time * 2 + child.position.x * 0.5) * 0.02;
+            child.rotation.z = Math.sin(time * 1.5 + child.position.z * 0.3) * 0.1;
+        }
+        
+        // Water ripple effects in koi ponds
+        if (child.isMesh && child.material && child.material.color &&
+            child.material.color.getHex() === 0x2c5aa0) {
+            child.position.y += Math.sin(time * 1.5 + child.position.x * 2) * 0.01;
+        }
+    });
+}
 
         function createMansionWalls() {
             const wallMaterial = new THREE.MeshStandardMaterial({ 
@@ -5460,6 +5955,7 @@
                     child.material.opacity = 0.2 + Math.sin(time * 4 + child.position.z * 5) * 0.1;
                 }
             });
+            animateJapaneseGarden();
         }
 
         function onWindowResize() {
