@@ -5086,7 +5086,8 @@ function createSingleKoiPond(x, y, z, radius) {
     
     // Koi fish
     for (let i = 0; i < 5; i++) {
-        const fishGeometry = new THREE.CapsuleGeometry(0.1, 0.4, 4, 8);
+        const fishGeometry = new THREE.SphereGeometry(0.15, 8, 6);
+            fishGeometry.scale(2, 0.8, 1);
         const fishColors = [0xff6b35, 0xffffff, 0xffd700, 0xff1744, 0x000000];
         const fishMaterial = new THREE.MeshLambertMaterial({ 
             color: fishColors[i % fishColors.length]
