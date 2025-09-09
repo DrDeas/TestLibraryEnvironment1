@@ -4899,7 +4899,7 @@ function createBambooGroves() {
             bambooGroup.add(culm);
             
             for (let j = 1; j < 6; j++) {
-                const nodeGeometry = new THREE.TorusGeometry(0.16, 0.02, 4, 8);
+                const nodeGeometry = new THREE.RingGeometry(0.14, 0.18, 8);
                 const node = new THREE.Mesh(nodeGeometry, new THREE.MeshLambertMaterial({ color: 0x3a5a35 }));
                 node.position.y = j * 2;
                 node.rotation.x = Math.PI / 2;
@@ -5287,18 +5287,18 @@ function createArchedBridge(x, y, z) {
         roughness: 0.7
     });
     
-    // Main arch structure
-    const archCurve = new THREE.EllipseCurve(0, 0, 3, 1.5, 0, Math.PI, false, 0);
-    const archPoints = archCurve.getPoints(20);
-    const archGeometry = new THREE.TubeGeometry(
-        new THREE.CatmullRomCurve3(archPoints.map(p => new THREE.Vector3(p.x, p.y, 0))),
-        20, 0.2, 8, false
-    );
-    const arch = new THREE.Mesh(archGeometry, woodMaterial);
-    arch.rotation.z = Math.PI;
-    arch.position.y = 1.5;
-    arch.castShadow = true;
-    bridgeGroup.add(arch);
+    // Simplified arch using boxes
+    for (let i = 0; i < 7; i++) {
+        const angle = (i / 6) * Math.PI;
+        const archHeight = Math.sin(angle) * 1.5;
+        const archX = (i - 3) * 0.8;
+        
+        const archPiece = new THREE.BoxGeometry(0.2, 0.2, 0.3);
+        const piece = new THREE.Mesh(archPiece, woodMaterial);
+        piece.position.set(archX, archHeight + 0.5, 0);
+        piece.castShadow = true;
+        bridgeGroup.add(piece);
+    }
     
     // Bridge deck
     const deckGeometry = new THREE.BoxGeometry(6, 0.1, 1.5);
@@ -5307,9 +5307,9 @@ function createArchedBridge(x, y, z) {
     deck.castShadow = true;
     bridgeGroup.add(deck);
     
-    // Railings
+    // Simplified railings
     for (let i = -2.5; i <= 2.5; i += 0.5) {
-        const postGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 6);
+        const postGeometry = new THREE.BoxGeometry(0.05, 1, 0.05);
         const post = new THREE.Mesh(postGeometry, woodMaterial);
         post.position.set(i, 0.5, 0.6);
         post.castShadow = true;
