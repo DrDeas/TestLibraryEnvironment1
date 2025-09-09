@@ -5047,7 +5047,7 @@
 
             for (let i = 0; i < 8; i++) {
                 const angle = (i / 8) * Math.PI * 2;
-                const jetGeometry = new THREE.CylinderGeometry(0.02, 0.02, 4, 8);
+                const jetGeometry = new THREE.CylinderGeometry(0.02, 0.02, 6, 8);
                 const jet = new THREE.Mesh(jetGeometry, waterMaterial);
                 jet.position.set(
                     Math.cos(angle) * 0.3,
