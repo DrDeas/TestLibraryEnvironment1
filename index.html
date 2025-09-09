@@ -4830,31 +4830,31 @@
     createBambooGroves();
     createJapaneseTrees();
     createStonePathways();
-    createKoiPonds();
     createJapaneseLanterns();
     createRockGardens();
     createJapaneseBridges();
+    createJapaneseBushes();
 }
 
 function createJapaneseGrassAreas() {
     const mossGreenMaterial = new THREE.MeshLambertMaterial({ color: 0x2d5a2d });
     const brightGreenMaterial = new THREE.MeshLambertMaterial({ color: 0x3a7c3a });
     
-    // Replace existing grass areas with Japanese garden moss and grass
+    // Japanese garden moss and grass areas - moved outside library bounds
     const japaneseGrassPatches = [
-        // Moss areas (darker green)
-        { pos: [-35, 0.01, -35], size: [18, 18], material: mossGreenMaterial },
-        { pos: [35, 0.01, -35], size: [18, 18], material: mossGreenMaterial },
-        { pos: [-35, 0.01, 35], size: [18, 18], material: brightGreenMaterial },
-        { pos: [35, 0.01, 35], size: [18, 18], material: brightGreenMaterial },
+        // Outer corners (beyond library walls)
+        { pos: [-45, 0.01, -45], size: [20, 20], material: mossGreenMaterial },
+        { pos: [45, 0.01, -45], size: [20, 20], material: mossGreenMaterial },
+        { pos: [-45, 0.01, 45], size: [20, 20], material: brightGreenMaterial },
+        { pos: [45, 0.01, 45], size: [20, 20], material: brightGreenMaterial },
         
-        // Central garden areas
-        { pos: [0, 0.01, 40], size: [30, 15], material: brightGreenMaterial },
-        { pos: [0, 0.01, -45], size: [30, 10], material: mossGreenMaterial },
+        // Extended garden areas
+        { pos: [0, 0.01, 50], size: [40, 20], material: brightGreenMaterial },
+        { pos: [0, 0.01, -55], size: [40, 15], material: mossGreenMaterial },
         
-        // Side garden strips
-        { pos: [-45, 0.01, 0], size: [10, 40], material: mossGreenMaterial },
-        { pos: [45, 0.01, 0], size: [10, 40], material: brightGreenMaterial }
+        // Side garden strips (outside walls)
+        { pos: [-55, 0.01, 0], size: [15, 50], material: mossGreenMaterial },
+        { pos: [55, 0.01, 0], size: [15, 50], material: brightGreenMaterial }
     ];
 
     japaneseGrassPatches.forEach(patch => {
@@ -4870,33 +4870,34 @@ function createJapaneseGrassAreas() {
 function createBambooGroves() {
     const bambooMaterial = new THREE.MeshLambertMaterial({ color: 0x4a6741 });
     const bambooCulms = [
-        // Left bamboo grove
-        { pos: [-40, 0, -20], count: 8 },
-        { pos: [-38, 0, -25], count: 6 },
-        { pos: [-42, 0, -15], count: 5 },
+        // Moved outside library bounds
+        { pos: [-50, 0, -30], count: 10 },
+        { pos: [-48, 0, -35], count: 8 },
+        { pos: [-52, 0, -25], count: 6 },
         
-        // Right bamboo grove
-        { pos: [40, 0, -20], count: 7 },
-        { pos: [38, 0, -25], count: 6 },
-        { pos: [42, 0, -15], count: 4 },
+        { pos: [50, 0, -30], count: 9 },
+        { pos: [48, 0, -35], count: 7 },
+        { pos: [52, 0, -25], count: 5 },
         
-        // Back corner groves
-        { pos: [-25, 0, -45], count: 5 },
-        { pos: [25, 0, -45], count: 5 }
+        // Back groves (further from library)
+        { pos: [-35, 0, -55], count: 8 },
+        { pos: [35, 0, -55], count: 8 },
+        
+        // Front groves
+        { pos: [-40, 0, 50], count: 6 },
+        { pos: [40, 0, 50], count: 6 }
     ];
 
     bambooCulms.forEach(grove => {
         for (let i = 0; i < grove.count; i++) {
             const bambooGroup = new THREE.Group();
             
-            // Main bamboo culm
             const culmGeometry = new THREE.CylinderGeometry(0.15, 0.12, 8 + Math.random() * 4, 8);
             const culm = new THREE.Mesh(culmGeometry, bambooMaterial);
             culm.position.y = (8 + Math.random() * 4) / 2;
             culm.castShadow = true;
             bambooGroup.add(culm);
             
-            // Bamboo nodes
             for (let j = 1; j < 6; j++) {
                 const nodeGeometry = new THREE.TorusGeometry(0.16, 0.02, 4, 8);
                 const node = new THREE.Mesh(nodeGeometry, new THREE.MeshLambertMaterial({ color: 0x3a5a35 }));
@@ -4905,11 +4906,10 @@ function createBambooGroves() {
                 bambooGroup.add(node);
             }
             
-            // Position with some randomness
             bambooGroup.position.set(
-                grove.pos[0] + (Math.random() - 0.5) * 6,
+                grove.pos[0] + (Math.random() - 0.5) * 8,
                 grove.pos[1],
-                grove.pos[2] + (Math.random() - 0.5) * 6
+                grove.pos[2] + (Math.random() - 0.5) * 8
             );
             
             scene.add(bambooGroup);
@@ -4919,95 +4919,204 @@ function createBambooGroves() {
 }
 
 function createJapaneseTrees() {
-    // Cherry blossom trees
-    createCherryBlossomTree(-20, 0, 25);
-    createCherryBlossomTree(20, 0, 25);
-    createCherryBlossomTree(-30, 0, 5);
-    createCherryBlossomTree(30, 0, 5);
+    // Cherry blossom trees - moved outside
+    createCherryBlossomTree(-40, 0, 35);
+    createCherryBlossomTree(40, 0, 35);
+    createCherryBlossomTree(-45, 0, 10);
+    createCherryBlossomTree(45, 0, 10);
+    createCherryBlossomTree(-35, 0, -40);
+    createCherryBlossomTree(35, 0, -40);
     
-    // Pine trees
-    createJapanesePine(-15, 0, -35);
-    createJapanesePine(15, 0, -35);
-    createJapanesePine(35, 0, 20);
-    createJapanesePine(-35, 0, 20);
+    // Pine trees - moved outside
+    createJapanesePine(-50, 0, -45);
+    createJapanesePine(50, 0, -45);
+    createJapanesePine(45, 0, 30);
+    createJapanesePine(-45, 0, 30);
+    createJapanesePine(0, 0, -60);
+    createJapanesePine(0, 0, 55);
+    
+    // Japanese Maple trees
+    createJapaneseMaple(-35, 0, 45);
+    createJapaneseMaple(35, 0, 45);
+    createJapaneseMaple(-55, 0, -10);
+    createJapaneseMaple(55, 0, -10);
+    
+    // Weeping Willows
+    createWeepingWillow(-25, 0, 50);
+    createWeepingWillow(25, 0, 50);
 }
 
-function createCherryBlossomTree(x, y, z) {
+function createJapaneseMaple(x, y, z) {
     const treeGroup = new THREE.Group();
     
     // Trunk
-    const trunkGeometry = new THREE.CylinderGeometry(0.4, 0.6, 5, 8);
-    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x4a3c28 });
+    const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.4, 4, 8);
+    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x2d1b0a });
     const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-    trunk.position.y = 2.5;
+    trunk.position.y = 2;
     trunk.castShadow = true;
     treeGroup.add(trunk);
     
-    // Main branches
-    for (let i = 0; i < 6; i++) {
-        const angle = (i / 6) * Math.PI * 2;
-        const branchGeometry = new THREE.CylinderGeometry(0.1, 0.2, 3, 6);
-        const branch = new THREE.Mesh(branchGeometry, trunkMaterial);
-        branch.position.set(
-            Math.cos(angle) * 1.5,
-            4 + Math.random(),
-            Math.sin(angle) * 1.5
+    // Maple foliage clusters (red/orange)
+    const mapleMaterial = new THREE.MeshLambertMaterial({ 
+        color: 0xcc4125,
+        transparent: true,
+        opacity: 0.9
+    });
+    
+    for (let i = 0; i < 15; i++) {
+        const foliageGeometry = new THREE.SphereGeometry(0.4, 8, 6);
+        const foliage = new THREE.Mesh(foliageGeometry, mapleMaterial);
+        foliage.position.set(
+            (Math.random() - 0.5) * 5,
+            2.5 + Math.random() * 2.5,
+            (Math.random() - 0.5) * 5
         );
-        branch.rotation.z = angle + Math.PI / 2;
-        branch.rotation.x = Math.PI / 6;
-        branch.castShadow = true;
-        treeGroup.add(branch);
+        treeGroup.add(foliage);
     }
     
-    // Cherry blossom clusters
-    const blossomMaterial = new THREE.MeshLambertMaterial({ 
-        color: 0xffb6c1,
+    treeGroup.position.set(x, y, z);
+    scene.add(treeGroup);
+    collisionMeshes.push(treeGroup);
+}
+
+function createWeepingWillow(x, y, z) {
+    const treeGroup = new THREE.Group();
+    
+    // Trunk
+    const trunkGeometry = new THREE.CylinderGeometry(0.5, 0.7, 6, 8);
+    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x3d2f1f });
+    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+    trunk.position.y = 3;
+    trunk.castShadow = true;
+    treeGroup.add(trunk);
+    
+    // Drooping branches
+    const branchMaterial = new THREE.MeshLambertMaterial({ color: 0x4a5d23 });
+    
+    for (let i = 0; i < 20; i++) {
+        const angle = (i / 20) * Math.PI * 2;
+        const branchGeometry = new THREE.CylinderGeometry(0.02, 0.05, 4, 4);
+        const branch = new THREE.Mesh(branchGeometry, branchMaterial);
+        branch.position.set(
+            Math.cos(angle) * 2,
+            4,
+            Math.sin(angle) * 2
+        );
+        branch.rotation.z = Math.random() * 0.3;
+        branch.castShadow = true;
+        treeGroup.add(branch);
+        
+        // Hanging foliage
+        const foliageGeometry = new THREE.SphereGeometry(0.2, 6, 4);
+        const foliage = new THREE.Mesh(foliageGeometry, new THREE.MeshLambertMaterial({ color: 0x228b22 }));
+        foliage.position.set(
+            Math.cos(angle) * 2.5,
+            2 + Math.random(),
+            Math.sin(angle) * 2.5
+        );
+        treeGroup.add(foliage);
+    }
+    
+    treeGroup.position.set(x, y, z);
+    scene.add(treeGroup);
+    collisionMeshes.push(treeGroup);
+}
+
+function createJapaneseBushes() {
+    // Azalea bushes
+    createAzaleaBush(-42, 0, 25);
+    createAzaleaBush(42, 0, 25);
+    createAzaleaBush(-30, 0, 48);
+    createAzaleaBush(30, 0, 48);
+    createAzaleaBush(-50, 0, -15);
+    createAzaleaBush(50, 0, -15);
+    
+    // Boxwood hedges
+    createBoxwoodHedge(-40, 0, 40);
+    createBoxwoodHedge(40, 0, 40);
+    createBoxwoodHedge(-52, 0, 5);
+    createBoxwoodHedge(52, 0, 5);
+    
+    // Fern clusters
+    createFernCluster(-45, 0, 20);
+    createFernCluster(45, 0, 20);
+    createFernCluster(-25, 0, 52);
+    createFernCluster(25, 0, 52);
+}
+
+function createAzaleaBush(x, y, z) {
+    const bushGroup = new THREE.Group();
+    
+    // Main bush body
+    const bushGeometry = new THREE.SphereGeometry(1.2, 8, 6);
+    const bushMaterial = new THREE.MeshLambertMaterial({ color: 0x2d5016 });
+    const bush = new THREE.Mesh(bushGeometry, bushMaterial);
+    bush.position.y = 1;
+    bush.scale.y = 0.7;
+    bush.castShadow = true;
+    bushGroup.add(bush);
+    
+    // Azalea flowers (pink/purple)
+    const flowerMaterial = new THREE.MeshLambertMaterial({ 
+        color: 0xff69b4,
         transparent: true,
         opacity: 0.8
     });
     
-    for (let i = 0; i < 20; i++) {
-        const blossomGeometry = new THREE.SphereGeometry(0.3, 6, 6);
-        const blossom = new THREE.Mesh(blossomGeometry, blossomMaterial);
-        blossom.position.set(
-            (Math.random() - 0.5) * 6,
-            3 + Math.random() * 3,
-            (Math.random() - 0.5) * 6
+    for (let i = 0; i < 12; i++) {
+        const flowerGeometry = new THREE.SphereGeometry(0.1, 6, 4);
+        const flower = new THREE.Mesh(flowerGeometry, flowerMaterial);
+        flower.position.set(
+            (Math.random() - 0.5) * 2,
+            0.5 + Math.random() * 1.5,
+            (Math.random() - 0.5) * 2
         );
-        treeGroup.add(blossom);
+        bushGroup.add(flower);
     }
     
-    treeGroup.position.set(x, y, z);
-    scene.add(treeGroup);
-    collisionMeshes.push(treeGroup);
+    bushGroup.position.set(x, y, z);
+    scene.add(bushGroup);
+    collisionMeshes.push(bushGroup);
 }
 
-function createJapanesePine(x, y, z) {
-    const treeGroup = new THREE.Group();
+function createBoxwoodHedge(x, y, z) {
+    const hedgeGroup = new THREE.Group();
+    const hedgeMaterial = new THREE.MeshLambertMaterial({ color: 0x355e3b });
     
-    // Trunk
-    const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.5, 8, 8);
-    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x3d2f1f });
-    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-    trunk.position.y = 4;
-    trunk.castShadow = true;
-    treeGroup.add(trunk);
-    
-    // Pine needle layers
-    const needleMaterial = new THREE.MeshLambertMaterial({ color: 0x1a4a1a });
-    
+    // Create a row of trimmed bushes
     for (let i = 0; i < 5; i++) {
-        const radius = 3 - (i * 0.4);
-        const needleGeometry = new THREE.ConeGeometry(radius, 2, 8);
-        const needleLayer = new THREE.Mesh(needleGeometry, needleMaterial);
-        needleLayer.position.y = 5 + (i * 1.2);
-        needleLayer.castShadow = true;
-        treeGroup.add(needleLayer);
+        const hedgeGeometry = new THREE.BoxGeometry(1, 1.5, 0.8);
+        const hedgeSegment = new THREE.Mesh(hedgeGeometry, hedgeMaterial);
+        hedgeSegment.position.set(i * 1.2 - 2.4, 0.75, 0);
+        hedgeSegment.castShadow = true;
+        hedgeGroup.add(hedgeSegment);
     }
     
-    treeGroup.position.set(x, y, z);
-    scene.add(treeGroup);
-    collisionMeshes.push(treeGroup);
+    hedgeGroup.position.set(x, y, z);
+    scene.add(hedgeGroup);
+    collisionMeshes.push(hedgeGroup);
+}
+
+function createFernCluster(x, y, z) {
+    const fernGroup = new THREE.Group();
+    const fernMaterial = new THREE.MeshLambertMaterial({ color: 0x228b22 });
+    
+    for (let i = 0; i < 8; i++) {
+        const fernGeometry = new THREE.ConeGeometry(0.3, 1.5, 5);
+        const fern = new THREE.Mesh(fernGeometry, fernMaterial);
+        fern.position.set(
+            (Math.random() - 0.5) * 3,
+            0.75,
+            (Math.random() - 0.5) * 3
+        );
+        fern.rotation.y = Math.random() * Math.PI * 2;
+        fern.castShadow = true;
+        fernGroup.add(fern);
+    }
+    
+    fernGroup.position.set(x, y, z);
+    scene.add(fernGroup);
 }
 
 function createStonePathways() {
@@ -5017,26 +5126,26 @@ function createStonePathways() {
         metalness: 0.1
     });
     
-    // Main pathway stones
+    // Pathways leading to garden areas outside library
     const pathStones = [
-        // Path from front to cherry trees
-        { pos: [0, 0.1, 35], size: [1.5, 0.2, 1.5] },
-        { pos: [-2, 0.1, 32], size: [1.2, 0.2, 1.2] },
-        { pos: [2, 0.1, 29], size: [1.3, 0.2, 1.3] },
-        { pos: [-1, 0.1, 26], size: [1.4, 0.2, 1.4] },
-        { pos: [1, 0.1, 23], size: [1.2, 0.2, 1.2] },
+        // Path to front garden areas
+        { pos: [0, 0.1, 40], size: [1.5, 0.2, 1.5] },
+        { pos: [-3, 0.1, 43], size: [1.2, 0.2, 1.2] },
+        { pos: [3, 0.1, 43], size: [1.3, 0.2, 1.3] },
+        { pos: [-6, 0.1, 46], size: [1.4, 0.2, 1.4] },
+        { pos: [6, 0.1, 46], size: [1.2, 0.2, 1.2] },
         
         // Path to left garden
-        { pos: [-8, 0.1, 20], size: [1.3, 0.2, 1.3] },
-        { pos: [-12, 0.1, 18], size: [1.2, 0.2, 1.2] },
-        { pos: [-16, 0.1, 16], size: [1.4, 0.2, 1.4] },
-        { pos: [-20, 0.1, 14], size: [1.3, 0.2, 1.3] },
+        { pos: [-35, 0.1, 30], size: [1.3, 0.2, 1.3] },
+        { pos: [-38, 0.1, 33], size: [1.2, 0.2, 1.2] },
+        { pos: [-41, 0.1, 36], size: [1.4, 0.2, 1.4] },
+        { pos: [-44, 0.1, 39], size: [1.3, 0.2, 1.3] },
         
         // Path to right garden
-        { pos: [8, 0.1, 20], size: [1.3, 0.2, 1.3] },
-        { pos: [12, 0.1, 18], size: [1.2, 0.2, 1.2] },
-        { pos: [16, 0.1, 16], size: [1.4, 0.2, 1.4] },
-        { pos: [20, 0.1, 14], size: [1.3, 0.2, 1.3] }
+        { pos: [35, 0.1, 30], size: [1.3, 0.2, 1.3] },
+        { pos: [38, 0.1, 33], size: [1.2, 0.2, 1.2] },
+        { pos: [41, 0.1, 36], size: [1.4, 0.2, 1.4] },
+        { pos: [44, 0.1, 39], size: [1.3, 0.2, 1.3] }
     ];
     
     pathStones.forEach(stone => {
@@ -5050,86 +5159,15 @@ function createStonePathways() {
     });
 }
 
-function createKoiPonds() {
-    // Main koi pond
-    createSingleKoiPond(-25, 0, 15, 6);
-    // Smaller pond
-    createSingleKoiPond(25, 0, -10, 4);
-}
-
-function createSingleKoiPond(x, y, z, radius) {
-    const pondGroup = new THREE.Group();
-    
-    // Pond basin
-    const basinGeometry = new THREE.CylinderGeometry(radius, radius, 0.5, 32);
-    const basinMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0x4a4a4a,
-        roughness: 0.9
-    });
-    const basin = new THREE.Mesh(basinGeometry, basinMaterial);
-    basin.position.y = -0.1;
-    basin.receiveShadow = true;
-    pondGroup.add(basin);
-    
-    // Water surface
-    const waterGeometry = new THREE.CylinderGeometry(radius - 0.2, radius - 0.2, 0.1, 32);
-    const waterMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0x2c5aa0,
-        transparent: true,
-        opacity: 0.7,
-        roughness: 0.1,
-        metalness: 0.1
-    });
-    const water = new THREE.Mesh(waterGeometry, waterMaterial);
-    water.position.y = 0.2;
-    pondGroup.add(water);
-    
-    // Koi fish
-    for (let i = 0; i < 5; i++) {
-        const fishGeometry = new THREE.SphereGeometry(0.15, 8, 6);
-            fishGeometry.scale(2, 0.8, 1);
-        const fishColors = [0xff6b35, 0xffffff, 0xffd700, 0xff1744, 0x000000];
-        const fishMaterial = new THREE.MeshLambertMaterial({ 
-            color: fishColors[i % fishColors.length]
-        });
-        const fish = new THREE.Mesh(fishGeometry, fishMaterial);
-        const angle = (i / 5) * Math.PI * 2;
-        fish.position.set(
-            Math.cos(angle) * (radius - 1),
-            0.15,
-            Math.sin(angle) * (radius - 1)
-        );
-        fish.rotation.y = angle + Math.PI / 2;
-        pondGroup.add(fish);
-    }
-    
-    // Pond rocks
-    const rockMaterial = new THREE.MeshStandardMaterial({ color: 0x555555 });
-    for (let i = 0; i < 8; i++) {
-        const angle = (i / 8) * Math.PI * 2;
-        const rockGeometry = new THREE.SphereGeometry(0.3 + Math.random() * 0.3, 6, 6);
-        const rock = new THREE.Mesh(rockGeometry, rockMaterial);
-        rock.position.set(
-            Math.cos(angle) * (radius + 0.5),
-            0.15,
-            Math.sin(angle) * (radius + 0.5)
-        );
-        rock.castShadow = true;
-        pondGroup.add(rock);
-    }
-    
-    pondGroup.position.set(x, y, z);
-    scene.add(pondGroup);
-    collisionMeshes.push(pondGroup);
-}
-
 function createJapaneseLanterns() {
-    // Stone lanterns at key positions
-    createStoneLantern(-15, 0, 30);
-    createStoneLantern(15, 0, 30);
-    createStoneLantern(-30, 0, -5);
-    createStoneLantern(30, 0, -5);
-    createStoneLantern(0, 0, -40);
+    // Stone lanterns moved to garden areas
+    createStoneLantern(-40, 0, 45);
+    createStoneLantern(40, 0, 45);
+    createStoneLantern(-50, 0, -20);
+    createStoneLantern(50, 0, -20);
+    createStoneLantern(0, 0, -55);
+    createStoneLantern(-30, 0, 50);
+    createStoneLantern(30, 0, 50);
 }
 
 function createStoneLantern(x, y, z) {
@@ -5179,7 +5217,7 @@ function createStoneLantern(x, y, z) {
     lanternGroup.add(light);
     
     // Point light for illumination
-    const pointLight = new THREE.PointLight(0xfff8dc, 0.5, 10);
+    const pointLight = new THREE.PointLight(0xfff8dc, 0.5, 15);
     pointLight.position.y = 3;
     pointLight.castShadow = true;
     lanternGroup.add(pointLight);
@@ -5190,9 +5228,10 @@ function createStoneLantern(x, y, z) {
 }
 
 function createRockGardens() {
-    // Zen rock garden areas
-    createZenGarden(-35, 0, -15);
-    createZenGarden(35, 0, 10);
+    // Zen rock garden areas - moved outside
+    createZenGarden(-45, 0, -25);
+    createZenGarden(45, 0, -25);
+    createZenGarden(0, 0, 50);
 }
 
 function createZenGarden(x, y, z) {
@@ -5236,10 +5275,9 @@ function createZenGarden(x, y, z) {
 }
 
 function createJapaneseBridges() {
-    // Arched bridge over imaginary stream
+    // Keep only the arched bridge in its current position
     createArchedBridge(-10, 0, 5);
-    // Small stepping stone bridge
-    createSteppingStones(10, 0, 10);
+    // Remove stepping stones as they were moved outside
 }
 
 function createArchedBridge(x, y, z) {
@@ -5288,46 +5326,10 @@ function createArchedBridge(x, y, z) {
     collisionMeshes.push(bridgeGroup);
 }
 
-function createSteppingStones(x, y, z) {
-    const stoneMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0x708090,
-        roughness: 0.8
-    });
-    
-    const stonePositions = [
-        [0, 0.2, 0],
-        [1.5, 0.15, 0.5],
-        [3, 0.18, -0.3],
-        [4.5, 0.16, 0.2],
-        [6, 0.2, 0]
-    ];
-    
-    stonePositions.forEach(pos => {
-        const stoneGeometry = new THREE.CylinderGeometry(0.6, 0.7, 0.3, 8);
-        const stone = new THREE.Mesh(stoneGeometry, stoneMaterial);
-        stone.position.set(x + pos[0], y + pos[1], z + pos[2]);
-        stone.rotation.y = Math.random() * Math.PI;
-        stone.castShadow = true;
-        stone.receiveShadow = true;
-        scene.add(stone);
-    });
-}
-
 function animateJapaneseGarden() {
     const time = Date.now() * 0.001;
     
-    // Animate koi fish
     scene.traverse((child) => {
-        if (child.isMesh && child.geometry && child.geometry.type === 'CapsuleGeometry') {
-            // Koi fish swimming motion
-            const radius = 3;
-            const speed = 0.5;
-            const fishAngle = time * speed + child.position.x;
-            child.position.x = Math.cos(fishAngle) * radius;
-            child.position.z = Math.sin(fishAngle) * radius;
-            child.rotation.y = fishAngle + Math.PI / 2;
-        }
-        
         // Gentle sway for cherry blossoms
         if (child.isMesh && child.material && child.material.color && 
             child.material.color.getHex() === 0xffb6c1) {
@@ -5335,10 +5337,17 @@ function animateJapaneseGarden() {
             child.rotation.z = Math.sin(time * 1.5 + child.position.z * 0.3) * 0.1;
         }
         
-        // Water ripple effects in koi ponds
+        // Sway for maple leaves
         if (child.isMesh && child.material && child.material.color &&
-            child.material.color.getHex() === 0x2c5aa0) {
-            child.position.y += Math.sin(time * 1.5 + child.position.x * 2) * 0.01;
+            child.material.color.getHex() === 0xcc4125) {
+            child.position.y += Math.sin(time * 1.8 + child.position.x * 0.3) * 0.015;
+            child.rotation.y = Math.sin(time * 1.2 + child.position.z * 0.4) * 0.1;
+        }
+        
+        // Willow branch movement
+        if (child.isMesh && child.material && child.material.color &&
+            child.material.color.getHex() === 0x4a5d23) {
+            child.rotation.z += Math.sin(time * 2 + child.position.x * 0.5) * 0.02;
         }
     });
 }
