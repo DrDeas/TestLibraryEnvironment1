@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Deas Luxury Mansion Library</title>
+    <title>Dr. Deas Virtual Library</title>
 
-    <meta property="og:title" content="Dr. Deas Luxury Mansion Library">
+    <meta property="og:title" content="Dr. Deas Virtual Library">
     <meta property="og:description" content="Experience Dr. Deas's reading collection in an immersive luxury mansion environment — optimized for VR headset.">
     <meta property="og:image" content="https://drdeas.github.io/DrDeasVirtualLibrary/341_books_collage.png">
     <meta property="og:url" content="https://drdeas.github.io/DrDeasVirtualLibrary/index.html">
@@ -259,7 +259,7 @@
 </head>
 <body>
     <div id="info">
-        <h3>Dr. Deas Luxury Mansion Library</h3>
+        <h3>Dr. Deas Virtual Library</h3>
         <p>Click "Enter VR" in any supported VR headset</p>
         <p>Desktop: Use arrow keys (↑↓←→) to explore</p>
         <p>● W/S keys: Move vertically up/down</p>
@@ -4650,7 +4650,7 @@
             }
 
             checkCollisions(newPosition) {
-                const collisionDistance = 2.5;
+                const collisionDistance = 1.5;
                 
                 for (let collisionMesh of collisionMeshes) {
                     const distance = newPosition.distanceTo(collisionMesh.position);
@@ -4659,8 +4659,8 @@
                     }
                 }
                 
-                if (newPosition.x < -LIBRARY_WIDTH / 2 + 2 || newPosition.x > LIBRARY_WIDTH / 2 - 2 ||
-                    newPosition.z < -LIBRARY_DEPTH / 2 + 2 || newPosition.z > LIBRARY_DEPTH / 2 - 2) {
+                if (newPosition.x < -LIBRARY_WIDTH / 2 + 4 || newPosition.x > LIBRARY_WIDTH / 2 - 4 ||
+                    newPosition.z < -LIBRARY_DEPTH / 2 + 14 || newPosition.z > LIBRARY_DEPTH / 2 - 4) {
                     return true;
                 }
                 
@@ -4724,14 +4724,14 @@
             const ctx = canvas.getContext('2d');
 
             const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, '#f8f8ff');
-            gradient.addColorStop(0.3, '#e6e6fa');
-            gradient.addColorStop(0.7, '#dcdcdc');
-            gradient.addColorStop(1, '#f0f8ff');
+            gradient.addColorStop(0, '#d0d0d5');
+            gradient.addColorStop(0.3, '#c0c0c8');
+            gradient.addColorStop(0.7, '#b0b0b8');
+            gradient.addColorStop(1, '#c8c8d0');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.strokeStyle = 'rgba(169, 169, 169, 0.3)';
+            ctx.strokeStyle = 'rgba(100, 100, 100, 0.3)';
             ctx.lineWidth = 2;
             for (let i = 0; i < 20; i++) {
                 ctx.beginPath();
@@ -4817,25 +4817,21 @@
             floor.receiveShadow = true;
             scene.add(floor);
 
-            // Grass areas
+            // Grass areas (keeping the interior grass areas)
             createGrassAreas();
             // Mansion walls
             createMansionWalls();
             // Ornate ceiling
             createOrnateCompartmentCeiling();
+            // Japanese garden outside front wall
+            createJapaneseGarden();
         }
 
         function createGrassAreas() {
             const grassMaterial = new THREE.MeshLambertMaterial({ color: 0x228B22 });
             
-            const grassPatches = [
-                { pos: [-35, 0, -35], size: [15, 15] },
-                { pos: [35, 0, -35], size: [15, 15] },
-                { pos: [-35, 0, 35], size: [15, 15] },
-                { pos: [35, 0, 35], size: [15, 15] },
-                { pos: [0, 0, 40], size: [25, 10] },
-                { pos: [0, 0, -40], size: [25, 10] }
-            ];
+            // Keep only the interior grass patches
+            const grassPatches = []; // Keeping this function in case I want to add interior grass patches later
 
             grassPatches.forEach(patch => {
                 const grassGeometry = new THREE.PlaneGeometry(patch.size[0], patch.size[1]);
@@ -4845,6 +4841,277 @@
                 grass.receiveShadow = true;
                 scene.add(grass);
             });
+        }
+
+        function createJapaneseGarden() {
+            // Create the garden area outside the front wall
+            const gardenGroup = new THREE.Group();
+            
+            // Japanese grass base - larger area
+            const japaneseGrassMaterial = new THREE.MeshLambertMaterial({ color: 0x2d5016 });
+            const japaneseGrassGeometry = new THREE.PlaneGeometry(60, 30);
+            const japaneseGrass = new THREE.Mesh(japaneseGrassGeometry, japaneseGrassMaterial);
+            japaneseGrass.rotation.x = -Math.PI / 2;
+            japaneseGrass.position.set(0, 0.01, 45);
+            japaneseGrass.receiveShadow = true;
+            gardenGroup.add(japaneseGrass);
+
+            // Traditional Japanese materials
+            const stoneMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x696969,
+                roughness: 0.8,
+                metalness: 0.1
+            });
+            
+            const waterMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x1e3a8a,
+                roughness: 0.1,
+                metalness: 0.1,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const bambooMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8FBC8F,
+                roughness: 0.6,
+                metalness: 0.1
+            });
+
+            const woodMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8B4513,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+
+            // Create the central pond
+            const pondGeometry = new THREE.CylinderGeometry(6, 6, 0.3, 32);
+            const pond = new THREE.Mesh(pondGeometry, waterMaterial);
+            pond.position.set(0, 0.15, 40);
+            pond.receiveShadow = true;
+            gardenGroup.add(pond);
+
+            // Pond border stones
+            for (let i = 0; i < 24; i++) {
+                const angle = (i / 24) * Math.PI * 2;
+                const stoneGeometry = new THREE.BoxGeometry(
+                    0.3 + Math.random() * 0.2,
+                    0.2 + Math.random() * 0.1,
+                    0.5 + Math.random() * 0.3
+                );
+                const stone = new THREE.Mesh(stoneGeometry, stoneMaterial);
+                stone.position.set(
+                    Math.cos(angle) * 6.5,
+                    0.1,
+                    40 + Math.sin(angle) * 6.5
+                );
+                stone.rotation.y = Math.random() * Math.PI * 2;
+                stone.castShadow = true;
+                gardenGroup.add(stone);
+            }
+
+            // Create tall bamboo fountain water feature
+            const fountainGroup = new THREE.Group();
+            
+            // Bamboo spout (tall and elegant)
+            const bambooSpoutGeometry = new THREE.CylinderGeometry(0.15, 0.2, 8, 12);
+            const bambooSpout = new THREE.Mesh(bambooSpoutGeometry, bambooMaterial);
+            bambooSpout.position.set(0, 4, 0);
+            bambooSpout.castShadow = true;
+            fountainGroup.add(bambooSpout);
+
+            // Bamboo segments (traditional look)
+            for (let i = 0; i < 4; i++) {
+                const segmentGeometry = new THREE.TorusGeometry(0.18, 0.03, 8, 16);
+                const segment = new THREE.Mesh(segmentGeometry, woodMaterial);
+                segment.position.set(0, 1 + i * 2, 0);
+                segment.rotation.x = Math.PI / 2;
+                fountainGroup.add(segment);
+            }
+
+            // Water spout effect
+            const waterSpoutGeometry = new THREE.CylinderGeometry(0.02, 0.05, 3, 8);
+            const waterSpout = new THREE.Mesh(waterSpoutGeometry, waterMaterial);
+            waterSpout.position.set(0, 9.5, 0);
+            fountainGroup.add(waterSpout);
+
+            // Stone base for bamboo fountain
+            const fountainBaseGeometry = new THREE.CylinderGeometry(1, 1, 0.5, 16);
+            const fountainBase = new THREE.Mesh(fountainBaseGeometry, stoneMaterial);
+            fountainBase.position.set(0, 0.25, 0);
+            fountainBase.castShadow = true;
+            fountainGroup.add(fountainBase);
+
+            fountainGroup.position.set(5, 0, 40);
+            gardenGroup.add(fountainGroup);
+            collisionMeshes.push(fountainGroup);
+
+            // Create tall trees around the garden
+            const treeTrunkMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x8B4513,
+                roughness: 0.8,
+                metalness: 0.1
+            });
+            
+            const treeLeavesMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x228B22
+            });
+
+            // Japanese Maple trees (shorter, broader)
+            const maplePositions = [
+                { x: -15, z: 35 },
+                { x: 15, z: 35 },
+                { x: -12, z: 45 },
+                { x: 12, z: 45 }
+            ];
+
+            maplePositions.forEach(pos => {
+                const mapleGroup = new THREE.Group();
+                
+                // Trunk
+                const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.5, 6, 8);
+                const trunk = new THREE.Mesh(trunkGeometry, treeTrunkMaterial);
+                trunk.position.y = 3;
+                trunk.castShadow = true;
+                mapleGroup.add(trunk);
+
+                // Foliage (multiple spheres for natural look)
+                for (let i = 0; i < 5; i++) {
+                    const foliageGeometry = new THREE.SphereGeometry(2 + Math.random(), 8, 8);
+                    const foliage = new THREE.Mesh(foliageGeometry, treeLeavesMaterial);
+                    foliage.position.set(
+                        (Math.random() - 0.5) * 3,
+                        5 + Math.random() * 2,
+                        (Math.random() - 0.5) * 3
+                    );
+                    foliage.castShadow = true;
+                    mapleGroup.add(foliage);
+                }
+
+                mapleGroup.position.set(pos.x, 0, pos.z);
+                gardenGroup.add(mapleGroup);
+                collisionMeshes.push(mapleGroup);
+            });
+
+            // Tall Pine/Cedar trees
+            const tallTreePositions = [
+                { x: -18, z: 35 },
+                { x: 18, z: 35 },
+                { x: -20, z: 50 },
+                { x: 20, z: 50 },
+                { x: 0, z: 52 },
+                { x: -8, z: 33 },
+                { x: 8, z: 33 }
+            ];
+
+            tallTreePositions.forEach(pos => {
+                const tallTreeGroup = new THREE.Group();
+                
+                // Tall trunk
+                const tallTrunkGeometry = new THREE.CylinderGeometry(0.4, 0.6, 15, 8);
+                const tallTrunk = new THREE.Mesh(tallTrunkGeometry, treeTrunkMaterial);
+                tallTrunk.position.y = 7.5;
+                tallTrunk.castShadow = true;
+                tallTreeGroup.add(tallTrunk);
+
+                // Conical foliage layers
+                for (let layer = 0; layer < 4; layer++) {
+                    const radius = 3 - layer * 0.5;
+                    const height = 4 - layer * 0.3;
+                    const coneGeometry = new THREE.ConeGeometry(radius, height, 8);
+                    const cone = new THREE.Mesh(coneGeometry, treeLeavesMaterial);
+                    cone.position.y = 10 + layer * 2.5;
+                    cone.castShadow = true;
+                    tallTreeGroup.add(cone);
+                }
+
+                tallTreeGroup.position.set(pos.x, 0, pos.z);
+                gardenGroup.add(tallTreeGroup);
+                collisionMeshes.push(tallTreeGroup);
+            });
+
+            // Traditional Japanese stepping stones leading to the pond
+            const steppingStonePositions = [
+                { x: 0, z: 32 },
+                { x: -1, z: 34 },
+                { x: 1, z: 36 },
+                { x: -0.5, z: 38 }
+            ];
+
+            steppingStonePositions.forEach(pos => {
+                const stoneGeometry = new THREE.CylinderGeometry(0.8, 0.9, 0.2, 8);
+                const stone = new THREE.Mesh(stoneGeometry, stoneMaterial);
+                stone.position.set(pos.x, 0.1, pos.z);
+                stone.castShadow = true;
+                gardenGroup.add(stone);
+            });
+
+            // Add some ornamental rocks around the garden
+            const ornamentalRockPositions = [
+                { x: -10, z: 38 },
+                { x: 10, z: 42 },
+                { x: -5, z: 48 },
+                { x: 7, z: 35 }
+            ];
+
+            ornamentalRockPositions.forEach(pos => {
+                const rockGeometry = new THREE.SphereGeometry(1 + Math.random() * 0.5, 8, 8);
+                const rock = new THREE.Mesh(rockGeometry, stoneMaterial);
+                rock.position.set(pos.x, 0.5, pos.z);
+                rock.scale.y = 0.6; // Flatten slightly
+                rock.castShadow = true;
+                gardenGroup.add(rock);
+                collisionMeshes.push(rock);
+            });
+
+            // Add bamboo plants around the perimeter
+            const bambooPositions = [
+                { x: -16, z: 42 },
+                { x: 16, z: 38 },
+                { x: -14, z: 48 },
+                { x: 14, z: 32 }
+            ];
+
+            bambooPositions.forEach(pos => {
+                const bambooClusterGroup = new THREE.Group();
+                
+                for (let i = 0; i < 5; i++) {
+                    const bambooHeight = 4 + Math.random() * 3;
+                    const bambooStalkGeometry = new THREE.CylinderGeometry(0.08, 0.12, bambooHeight, 8);
+                    const bambooStalk = new THREE.Mesh(bambooStalkGeometry, bambooMaterial);
+                    bambooStalk.position.set(
+                        (Math.random() - 0.5) * 2,
+                        bambooHeight / 2,
+                        (Math.random() - 0.5) * 2
+                    );
+                    bambooStalk.castShadow = true;
+                    bambooClusterGroup.add(bambooStalk);
+
+                    // Add bamboo segments
+                    for (let j = 1; j < bambooHeight; j += 1.5) {
+                        const segmentGeometry = new THREE.TorusGeometry(0.1, 0.02, 6, 12);
+                        const segment = new THREE.Mesh(segmentGeometry, woodMaterial);
+                        segment.position.set(
+                            bambooStalk.position.x,
+                            j,
+                            bambooStalk.position.z
+                        );
+                        segment.rotation.x = Math.PI / 2;
+                        bambooClusterGroup.add(segment);
+                    }
+                }
+
+                bambooClusterGroup.position.set(pos.x, 0, pos.z);
+                gardenGroup.add(bambooClusterGroup);
+                collisionMeshes.push(bambooClusterGroup);
+            });
+
+            // Add subtle lighting for the garden
+            const gardenLight = new THREE.PointLight(0x87CEEB, 0.5, 25);
+            gardenLight.position.set(0, 8, 40);
+            gardenLight.castShadow = true;
+            gardenGroup.add(gardenLight);
+
+            scene.add(gardenGroup);
         }
 
         function createMansionWalls() {
@@ -5139,6 +5406,10 @@
             createChandelier(0, 9, 0);
             createChandelier(-20, 9, -10);
             createChandelier(20, 9, -10);
+            createChandelier(-20, 9, 10);
+            createChandelier(20, 9, 10);
+            // Cherry blossom tree in back right corner
+            createCherryBlossomTree(25, 0, -25);
         }
 
         function createLuxurySeatingArea(x, y, z, frameMaterial, cushionMaterial) {
@@ -5229,6 +5500,46 @@
             chandelierGroup.position.set(x, y, z);
             scene.add(chandelierGroup);
         }
+
+function createCherryBlossomTree(x, y, z) {
+    const cherryTreeGroup = new THREE.Group();
+    
+    // Tree trunk material
+    const trunkMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x654321,
+        roughness: 0.8,
+        metalness: 0.1
+    });
+    
+    // Cherry blossom material (pink flowers)
+    const blossomMaterial = new THREE.MeshLambertMaterial({ 
+        color: 0xFFB6C1
+    });
+    
+    // Tree trunk - keep it under ceiling height
+    const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.5, 8, 8);
+    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+    trunk.position.y = 4;
+    trunk.castShadow = true;
+    cherryTreeGroup.add(trunk);
+
+    // Create multiple blossom clusters
+    for (let i = 0; i < 8; i++) {
+        const blossomGeometry = new THREE.SphereGeometry(1.2 + Math.random() * 0.5, 8, 8);
+        const blossom = new THREE.Mesh(blossomGeometry, blossomMaterial);
+        blossom.position.set(
+            (Math.random() - 0.5) * 4,
+            6 + Math.random() * 2,
+            (Math.random() - 0.5) * 4
+        );
+        blossom.castShadow = true;
+        cherryTreeGroup.add(blossom);
+    }
+
+    cherryTreeGroup.position.set(x, y, z);
+    scene.add(cherryTreeGroup);
+    collisionMeshes.push(cherryTreeGroup);
+}
 
         function createBookCover(book, x, y, z, parentGroup) {
             const bookGeometry = new THREE.BoxGeometry(BOOK_WIDTH, BOOK_HEIGHT, BOOK_THICKNESS);
