@@ -10,6 +10,8 @@
     <meta property="og:image" content="https://drdeas.github.io/DrDeasVirtualLibrary/341_books_collage.png">
     <meta property="og:url" content="https://drdeas.github.io/DrDeasVirtualLibrary/index.html">
     <meta property="og:type" content="website">
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -5151,6 +5153,8 @@
             rightWall.rotation.y = -Math.PI / 2;
             rightWall.receiveShadow = true;
             scene.add(rightWall);
+            // Add front wall with large window
+            createFrontWallWithWindow();
         }
 
         function createOrnateCompartmentCeiling() {
@@ -5247,7 +5251,7 @@
             
             for (let shelfLevel = 0; shelfLevel < SHELVES_PER_BOOKCASE; shelfLevel++) {
                 const yPosition = SHELF_BASE_Y + shelfLevel * SHELF_SPACING_Y;
-                const shelfGeometry = new THREE.BoxGeometry(BOOKCASE_WIDTH, SHELF_THICKNESS, SHELF_DEPTH);
+                const shelfGeometry = new THREE.BoxGeometry(BOOKCASE_WIDTH - .6, SHELF_THICKNESS, SHELF_DEPTH);
                 const shelf = new THREE.Mesh(shelfGeometry, shelfMaterial);
                 shelf.position.set(0, yPosition, 0);
                 shelf.castShadow = true;
@@ -5410,6 +5414,9 @@
             createChandelier(20, 9, 10);
             // Cherry blossom tree in back right corner
             createCherryBlossomTree(25, 0, -25);
+            // Progress tracking poster
+            createProgressTracker();
+            createFanonQuote();
         }
 
         function createLuxurySeatingArea(x, y, z, frameMaterial, cushionMaterial) {
@@ -5539,6 +5546,256 @@ function createCherryBlossomTree(x, y, z) {
     cherryTreeGroup.position.set(x, y, z);
     scene.add(cherryTreeGroup);
     collisionMeshes.push(cherryTreeGroup);
+}
+
+function createProgressTracker() {
+    const posterGroup = new THREE.Group();
+    
+    // Create poster background
+    const posterGeometry = new THREE.PlaneGeometry(8, 10);
+    const posterMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const poster = new THREE.Mesh(posterGeometry, posterMaterial);
+    poster.position.set(0, 0, 0.05);
+    poster.castShadow = true;
+    posterGroup.add(poster);
+    
+    // Create poster frame
+    const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+    
+    // Frame pieces
+    const topFrameGeometry = new THREE.BoxGeometry(8.4, 0.2, 0.1);
+    const topFrame = new THREE.Mesh(topFrameGeometry, frameMaterial);
+    topFrame.position.set(0, 5.1, 0.1);
+    posterGroup.add(topFrame);
+    
+    const bottomFrameGeometry = new THREE.BoxGeometry(8.4, 0.2, 0.1);
+    const bottomFrame = new THREE.Mesh(bottomFrameGeometry, frameMaterial);
+    bottomFrame.position.set(0, -5.1, 0.1);
+    posterGroup.add(bottomFrame);
+    
+    const leftFrameGeometry = new THREE.BoxGeometry(0.2, 10.4, 0.1);
+    const leftFrame = new THREE.Mesh(leftFrameGeometry, frameMaterial);
+    leftFrame.position.set(-4.1, 0, 0.1);
+    posterGroup.add(leftFrame);
+    
+    const rightFrameGeometry = new THREE.BoxGeometry(0.2, 10.4, 0.1);
+    const rightFrame = new THREE.Mesh(rightFrameGeometry, frameMaterial);
+    rightFrame.position.set(4.1, 0, 0.1);
+    posterGroup.add(rightFrame);
+    
+    // Calculate progress
+    const startDate = new Date('2020-09-27');
+    const endDate = new Date('2039-11-26');
+    const currentDate = new Date();
+    
+    const totalWeeks = Math.ceil((endDate - startDate) / (7 * 24 * 60 * 60 * 1000));
+    const weeksElapsed = Math.ceil((currentDate - startDate) / (7 * 24 * 60 * 60 * 1000));
+    const weekProgress = Math.max(0, Math.min(1, weeksElapsed / totalWeeks));
+    
+    const booksRead = books.filter(book => book.status === "Finished").length;
+    const bookProgress = booksRead / 1000;
+    
+    // Create progress bars with different colors
+    const booksProgressMaterial = new THREE.MeshStandardMaterial({ color: 0x4CAF50 }); // Green for books
+    const timeProgressMaterial = new THREE.MeshStandardMaterial({ color: 0x9C27B0 }); // Purple for time
+    const progressBarBgMaterial = new THREE.MeshStandardMaterial({ color: 0xE0E0E0 });
+    
+    // Books progress bar background
+    const booksBgGeometry = new THREE.PlaneGeometry(6, 0.6);
+    const booksBg = new THREE.Mesh(booksBgGeometry, progressBarBgMaterial);
+    booksBg.position.set(0, 1, 0.09);
+    posterGroup.add(booksBg);
+    
+    // Books progress bar fill
+    const booksProgressGeometry = new THREE.PlaneGeometry(6 * bookProgress, 0.6);
+    const booksProgressBar = new THREE.Mesh(booksProgressGeometry, booksProgressMaterial);
+    booksProgressBar.position.set(-3 + (3 * bookProgress), 1, 0.10);
+    posterGroup.add(booksProgressBar);
+    
+    // Time progress bar background
+    const timeBgGeometry = new THREE.PlaneGeometry(6, 0.6);
+    const timeBg = new THREE.Mesh(timeBgGeometry, progressBarBgMaterial);
+    timeBg.position.set(0, -2, 0.09);
+    posterGroup.add(timeBg);
+    
+    // Time progress bar fill
+    const timeProgressGeometry = new THREE.PlaneGeometry(6 * weekProgress, 0.6);
+    const timeProgressBar = new THREE.Mesh(timeProgressGeometry, timeProgressMaterial);
+    timeProgressBar.position.set(-3 + (3 * weekProgress), -2, 0.10);
+    posterGroup.add(timeProgressBar);
+    
+    // Create text using canvas texture
+    const canvas = document.createElement('canvas');
+    canvas.width = 2048;
+    canvas.height = 2560;
+    const ctx = canvas.getContext('2d');
+    
+    // White background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Title
+    ctx.fillStyle = '#111111';
+    ctx.font = 'bold 128px Lato, Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('1,000 BOOKS IN 1,000 WEEKS', canvas.width / 2, 240);
+
+    // Subtitle
+    ctx.font = 'bold 96px Lato, Arial';
+    ctx.fillText('READING CHALLENGE', canvas.width / 2, 360);
+    
+    // Books section
+    ctx.font = 'bold 96px Lato, Arial';
+    ctx.fillText('BOOKS FINISHED', canvas.width / 2, 720);
+    ctx.font = '80px Lato, Arial';
+    ctx.fillText(`${booksRead} / 1,000 (${(bookProgress * 100).toFixed(1)}%)`, canvas.width / 2, 840);
+    
+    // Time section
+    ctx.font = 'bold 96px Lato, Arial';
+    ctx.fillText('TIME ELAPSED', canvas.width / 2, 1520);
+    ctx.font = '80px Lato, Arial';
+    ctx.fillText(`${weeksElapsed} / 1,000 weeks (${(weekProgress * 100).toFixed(1)}%)`, canvas.width / 2, 1640);
+    
+    // Dates
+    ctx.font = '64px Lato, Arial';
+    ctx.fillText('Start Date: Sept 27, 2020', canvas.width / 2, 2080);
+    ctx.fillText('End Date: Nov 26, 2039', canvas.width / 2, 2180);
+    
+    // Remaining time
+    const weeksRemaining = totalWeeks - weeksElapsed;
+    const yearsRemaining = (weeksRemaining / 52.18).toFixed(1);
+    ctx.fillText(`${weeksRemaining} weeks (${yearsRemaining} years) remaining`, canvas.width / 2, 2320);
+    
+    const textTexture = new THREE.CanvasTexture(canvas);
+    const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture });
+    const textMesh = new THREE.Mesh(posterGeometry, textMaterial);
+    textMesh.position.set(0, 0, 0.08);
+    posterGroup.add(textMesh);
+    
+    // Position the poster on the right wall, near front
+    posterGroup.position.set(29.9, 6, 23);
+    posterGroup.rotation.y = -Math.PI / 2;
+    scene.add(posterGroup);
+}
+
+function createFanonQuote() {
+    const quoteGroup = new THREE.Group();
+    
+    // Create canvas for the graffiti-style text
+    const canvas = document.createElement('canvas');
+    canvas.width = 1536;
+    canvas.height = 768;
+    const ctx = canvas.getContext('2d');
+    
+    // Transparent background
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Set up graffiti-style font and color
+    ctx.fillStyle = '#111111';
+    ctx.strokeStyle = '#111111';
+    ctx.lineWidth = 1;
+    
+    // First line: "My final prayer:" (left-justified)
+    ctx.font = 'bold 72px Impact, Arial Black, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('My final prayer:', 75, 180);
+    ctx.strokeText('My final prayer:', 75, 180);
+    
+    // Second line: "O my body, make of me always a man who questions!" (left-justified)
+    ctx.font = 'bold 58px Impact, Arial Black, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('O my body, make of me always a man who questions!', 75, 300);
+    ctx.strokeText('O my body, make of me always a man who questions!', 75, 300);
+    
+    // Third line: "- Frantz Fanon" (right-justified)
+    ctx.font = 'bold 58px Impact, Arial Black, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('- Frantz Fanon', canvas.width - 200, 420);
+    ctx.strokeText('- Frantz Fanon', canvas.width - 200, 420);
+    
+    // Create texture from canvas
+    const textTexture = new THREE.CanvasTexture(canvas);
+    textTexture.flipY = true;
+    textTexture.minFilter = THREE.LinearFilter;
+    textTexture.magFilter = THREE.LinearFilter;
+    textTexture.generateMipmaps = false;
+    textTexture.wrapS = THREE.ClampToEdgeWrapping;
+    textTexture.wrapT = THREE.ClampToEdgeWrapping;
+    
+    // Create plane geometry for the quote
+    const quoteGeometry = new THREE.PlaneGeometry(12, 6);
+    const quoteMaterial = new THREE.MeshLambertMaterial({ 
+        map: textTexture, 
+        transparent: true,
+        alphaTest: 0.1,
+        side: THREE.DoubleSide
+    });
+    
+    const quoteMesh = new THREE.Mesh(quoteGeometry, quoteMaterial);
+    quoteMesh.position.set(0, 0, 0.05);
+    
+    // Add a custom property to identify this as static text
+    quoteMesh.userData.isStaticText = true;
+    
+    quoteGroup.add(quoteMesh);
+    
+    // Position the quote on the back wall, right side, to the left of cherry blossom tree
+    quoteGroup.position.set(18.5, 6, -29.9);
+    quoteGroup.rotation.y = 0;
+    
+    // Mark the entire group as static
+    quoteGroup.userData.isStaticText = true;
+    
+    scene.add(quoteGroup);
+}
+
+function createFrontWallWithWindow() {
+    const wallMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xf5f5dc,
+        roughness: 0.3,
+        metalness: 0.1
+    });
+
+    // Left wall section (4 units wide)
+    const leftWallGeometry = new THREE.PlaneGeometry(8, LIBRARY_HEIGHT);
+    const leftWall = new THREE.Mesh(leftWallGeometry, wallMaterial);
+    leftWall.position.set(-26, LIBRARY_HEIGHT / 2, LIBRARY_DEPTH / 2);
+    leftWall.rotation.y = Math.PI;
+    leftWall.receiveShadow = true;
+    scene.add(leftWall);
+
+    // Right wall section (4 units wide)
+    const rightWallGeometry = new THREE.PlaneGeometry(8, LIBRARY_HEIGHT);
+    const rightWall = new THREE.Mesh(rightWallGeometry, wallMaterial);
+    rightWall.position.set(26, LIBRARY_HEIGHT / 2, LIBRARY_DEPTH / 2);
+    rightWall.rotation.y = Math.PI;
+    rightWall.receiveShadow = true;
+    scene.add(rightWall);
+
+    // Window frame
+    const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+    
+    // Horizontal frame pieces (top and bottom)
+    const topFrameGeometry = new THREE.BoxGeometry(54, 0.2, 0.3);
+    const topFrame = new THREE.Mesh(topFrameGeometry, frameMaterial);
+    topFrame.position.set(0, LIBRARY_HEIGHT, LIBRARY_DEPTH / 2);
+    scene.add(topFrame);
+    
+    const bottomFrameGeometry = new THREE.BoxGeometry(54, 0.2, 0.3);
+    const bottomFrame = new THREE.Mesh(bottomFrameGeometry, frameMaterial);
+    bottomFrame.position.set(0, 0, LIBRARY_DEPTH / 2);
+    scene.add(bottomFrame);
+
+    // Vertical frame pieces (left and right edges)
+    const leftFrameGeometry = new THREE.BoxGeometry(0.2, LIBRARY_HEIGHT + 0.2, 0.3);
+    const leftFrame = new THREE.Mesh(leftFrameGeometry, frameMaterial);
+    leftFrame.position.set(-22, LIBRARY_HEIGHT / 2, LIBRARY_DEPTH / 2);
+    scene.add(leftFrame);
+    
+    const rightFrameGeometry = new THREE.BoxGeometry(0.2, LIBRARY_HEIGHT + 0.2, 0.3);
+    const rightFrame = new THREE.Mesh(rightFrameGeometry, frameMaterial);
+    rightFrame.position.set(22, LIBRARY_HEIGHT / 2, LIBRARY_DEPTH / 2);
+    scene.add(rightFrame);
 }
 
         function createBookCover(book, x, y, z, parentGroup) {
@@ -5756,22 +6013,27 @@ function createCherryBlossomTree(x, y, z) {
         }
 
         function animateWaterEffects() {
-            const time = Date.now() * 0.001;
-            
-            scene.traverse((child) => {
-                if (child.isMesh && child.material && child.material.color && 
-                    child.material.color.getHex() === 0x4169e1 && 
-                    child.geometry && child.geometry.type === 'CylinderGeometry') {
-                    child.position.y += Math.sin(time * 2 + child.position.x) * 0.02;
-                }
-                
-                if (child.isMesh && child.material && child.material.color &&
-                    child.material.color.getHex() === 0xffffff && child.material.transparent) {
-                    child.position.y += Math.sin(time * 3 + child.position.x * 10) * 0.01;
-                    child.material.opacity = 0.2 + Math.sin(time * 4 + child.position.z * 5) * 0.1;
-                }
-            });
+    const time = Date.now() * 0.001;
+    
+    scene.traverse((child) => {
+        // Skip objects marked as static text
+        if (child.userData.isStaticText) {
+            return;
         }
+        
+        if (child.isMesh && child.material && child.material.color && 
+            child.material.color.getHex() === 0x4169e1 && 
+            child.geometry && child.geometry.type === 'CylinderGeometry') {
+            child.position.y += Math.sin(time * 2 + child.position.x) * 0.02;
+        }
+        
+        if (child.isMesh && child.material && child.material.color &&
+            child.material.color.getHex() === 0xffffff && child.material.transparent) {
+            child.position.y += Math.sin(time * 3 + child.position.x * 10) * 0.01;
+            child.material.opacity = 0.2 + Math.sin(time * 4 + child.position.z * 5) * 0.1;
+        }
+    });
+}
 
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
